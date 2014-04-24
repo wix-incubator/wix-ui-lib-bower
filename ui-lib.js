@@ -424,12 +424,11 @@ var createColorBox = (function (){
 				  '<div class="colorpicker-priveuse colorpicker-opacity-back"></div>'+
 				  '<div class="colorpicker-current colorpicker-opacity-back"></div>' + 
 				'</div>';
-			
-			if(element.className.indexOf('colorpicker') === -1){
+			if(element.className.indexOf('uilib-colorpicker') === -1){
 				if(element.className.length===0){
-					element.className = 'colorpicker';
+					element.className = 'uilib-colorpicker';
 				} else{
-					element.className += ' colorpicker';
+					element.className += ' uilib-colorpicker';
 				}
 			}
 			
@@ -995,8 +994,6 @@ var createColorBox = (function (){
 
 	function createColorBox(options){
 		var cb = {};
-		createColorBox.instances = createColorBox.instances || [];
-		
 		var pickerInstance = {
 			showSimplePicker:showSimplePicker,
 			showAdvancePicker:showAdvancePicker,
@@ -1058,7 +1055,6 @@ var createColorBox = (function (){
 			hidePickers();	
 			bindEvents();
 
-			createColorBox.instances.push(pickerInstance);
 			return pickerInstance;
 		}
 
@@ -1097,7 +1093,7 @@ var createColorBox = (function (){
 			cb.colorBoxInnerArrow = document.createElement('div');
 
 			cb.colorBoxPicker.className = 'colorpicker';
-			cb.colorBox.className = 'color-box';
+			cb.colorBox.className = 'uilib-color-box';
 			cb.colorBoxInner.className = 'color-box-inner';
 			cb.colorBoxInnerArrow.className = 'color-box-inner-arrow';
 			
@@ -1128,29 +1124,20 @@ var createColorBox = (function (){
 		}
 		
 		function bindEvents(){
-					
-			window.addEventListener('click', function(){
-				hidePickers();
-			}, false);
-			
 			cb.colorBox.onclick = function(evt){
 				evt.stopPropagation && evt.stopPropagation();
 				evt.prevetDefault && evt.prevetDefault();		
 		
 				if(evt.target === cb.colorBox || evt.target === cb.colorBoxInner || evt.target === cb.colorBoxInnerArrow){
-					cb.popup.isOpen() ? hidePickers() : showPickers();
+                    if(!cb.popup.isOpen()){
+                        showPickers();
+                    }
 				}
 				return false;
 			}
 		
 		}
-		
-		function hideAllOpenPickers(){
-			createColorBox.instances.forEach(function(colorPicker){
-				colorPicker.hidePickers();
-			});
-		}
-		
+
 		function saveOpendColor(){			
 			cb.openedColor = options.isParamConected ? (pickerInstance.getColorObject() || pickerInstance.getColor()) : pickerInstance.getColor();
 		}
@@ -1174,7 +1161,6 @@ var createColorBox = (function (){
 		
 		function showPickers(){
 			saveOpendColor();
-			hideAllOpenPickers();
 			disableTextSelection();
 			cb.popup.open();
 		}
@@ -2130,7 +2116,7 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 			this.$Slider = $('<div>').Slider({
 				preLabel: '0',
 				postLabel: '100',
-				value: 100,
+				value: this.options.startWithOpacity,
 				toolTip: false
 			});
 			if(this.options.divider){
@@ -2178,7 +2164,7 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 		},
 		setOpacity: function (opacity) {
 			if(!opacity && opacity!==0){return;}
-			this.getPlugins().slider.setValue(opacity*100);
+			this.getPlugins().slider.setValue(opacity);
 		},
 		getPlugins: function () {
 			return {
@@ -2197,7 +2183,7 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 		getDefaults: function(){
 			return {
 				startWithColor: 'rgba(255,0,0,1)'
-				//value:'rgba(255,0,0,1)'
+			    //value:'rgba(255,0,0,1)'
 			}
 		}
 	};
@@ -3514,7 +3500,7 @@ jQuery.fn.definePlugin('Input', function ($) {
 		},
 		bindEvents: function () {
 			var input = this;
-			input.$input.change(function(){
+			input.$input.on('blur', function(){
 				input.setValue(input.$input.val());
 				input.triggerChangeEvent(input.getValue());
 			});
@@ -3533,7 +3519,9 @@ jQuery.fn.definePlugin('Input', function ($) {
 					value = Math.round(value);
 				}
 				this.lastValue = this.getValue();
-				this.$input.val(value);
+                if (value !== this.$input.val()) {
+                    this.$input.val(value);
+                }
 				this.value = value;
 				if(this.options.validate){
 					this.$input.removeClass(classNames.invalidInputClass).addClass(classNames.validInputClass);
@@ -3697,7 +3685,7 @@ jQuery.fn.definePlugin('Popup', function ($) {
 			this.modal.className = 'popup-modal';
 
 			this.closeBtn.className = 'popup-close-btn x-close-popup';
-			this.popup.className = 'popup';
+			this.popup.className = 'uilib-popup';
 			this.header.className = 'popup-header';
 			this.content.className = 'popup-content';
 			this.footer.className = 'popup-footer';
@@ -3739,7 +3727,7 @@ jQuery.fn.definePlugin('Popup', function ($) {
 				}			
 			}
 			var globalCloseHandler = function(evt){
-				var popupEl = $(evt.target).parents('.popup')[0];
+                var popupEl = $(evt.target).parents('.' + popup.popup.className)[0];
 				if(popupEl && popupEl === popup.popup || !popup.isOpen()){
 					return ;
 				}else if(!popup.options.modal){
@@ -3836,6 +3824,7 @@ jQuery.fn.definePlugin('Popup', function ($) {
 		},
 		open: function () {
 			if(this.isOpen()){return;}
+            this.closeAllPopups();
 			this.state = 'open';
 			setTimeout(function(){
 				if(this.options.modal){
@@ -3860,7 +3849,16 @@ jQuery.fn.definePlugin('Popup', function ($) {
 				this.popup.style.display = 'none';
 				this.arrow.style.display = 'none';
 			}.bind(this),0);
-		}
+		},
+        closeAllPopups: function(){
+            var $popups = $("." + this.popup.className);
+            $popups.each(function(index, popup){
+                var ctrl = $(popup).getCtrl();
+                if(ctrl) {
+                    ctrl.close();
+                }
+            });
+        }
 	};
 	
 	function createArrowElement(side){
@@ -3962,8 +3960,9 @@ jQuery.fn.definePlugin('Popup', function ($) {
 		}
 
         // popup will be opened on top of the control
+        // If there is no enough space for the height of the popup
 		var rightOver = (relativeToOffset.left - (popupWidth + arrowWidth + 1));
-		if(side === 'right' && rightOver < 0){
+		if((side === 'right' && rightOver < 0) || ((popupHeight + top) > window.innerHeight) ){
 			top = relativeToOffset.top - arrowWidth - popupHeight;
 			left = relativeToOffset.left + relativeToWidth/2 - popupWidth/2;
 			side = 'top';

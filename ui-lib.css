@@ -799,7 +799,7 @@ label.deg-label{
 }
 
 
-.color-box{
+.uilib-color-box{
 	cursor:pointer;
 	width :44px; 
 	height: 21px; 
@@ -823,15 +823,15 @@ label.deg-label{
 
 }
 
-.color-box .popup{
+.uilib-color-box .popup{
 	cursor:auto;
 }
 
-.color-box:hover{
+.uilib-color-box:hover{
 	box-shadow: 0 1px 1px rgba(0,0,0,0.5);
 }
-	
-.color-box-inner{
+
+.uilib-color-box .color-box-inner{
 	width:26px;
 	height:15px;
 	background: #000;
@@ -842,18 +842,15 @@ label.deg-label{
 }
 
 /* fix arrow position */
-.color-box .popup-arrow.popup-arrow-left{
+.uilib-color-box .popup-arrow.popup-arrow-left{
 	margin-left: -4px;
 }
 
-.color-box .popup-arrow.popup-arrow-right{
+.uilib-color-box .popup-arrow.popup-arrow-right{
 	margin-right: -3px;
 }
 
-
-
-
-.color-box-inner-arrow{
+.uilib-color-box .color-box-inner-arrow{
 	width: 9px;
 	height: 7px;
 	position: absolute;
@@ -911,11 +908,11 @@ label.deg-label{
 	cursor: pointer;
 }
 
-.picker-with-opacity .color-box, .picker-with-opacity .uilib-slider{
+.picker-with-opacity .uilib-color-box, .picker-with-opacity .uilib-slider{
 	display:inline-block;
 }
 
-.picker-with-opacity .color-box{
+.picker-with-opacity .uilib-color-box{
 	margin:0;
 }
 .picker-with-opacity .uilib-slider{
@@ -1234,7 +1231,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     font-size: 16px;
 }
 
-.font-style-picker .popup{
+.font-style-picker .uilib-popup{
 	overflow:visible;
     font-family: 'Helvetica Neue', Helvetica, Arial;
 }
@@ -1469,11 +1466,7 @@ input[type="password"].uilib-input.big {
     font-size: 11px;
     margin-top: -3px;
 }
-.popup{
-   background:red;  
-}
-
-.popup{
+.uilib-popup {
     font-family: Arial,sans-serif;
 	border: 1px solid #d4d4d4;
 	border-radius: 4px;

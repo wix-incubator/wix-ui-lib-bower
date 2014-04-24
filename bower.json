@@ -1,6 +1,6 @@
 {
   "name": "wix-ui-lib",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "homepage": "http://wix.github.com/wix-ui-lib",
   "description": "Starter Kit for Wix 3rd Party Apps",
   "main": ["./ui-lib.js","./ui-lib.css"],
