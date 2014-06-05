@@ -94,7 +94,7 @@ hr{
     clear: both;
 }
 
-.uilib-spiner { 
+.uilib-spiner {
   cursor: wait;
   background-color: rgba(0,0,0,0);
   opacity: .8;
@@ -109,7 +109,7 @@ hr{
   border-top: 3px solid rgba(0,0,0,0);
   border-left: 3px solid rgba(0,0,0,0);
   width: 10px;
-  height: 10px; 
+  height: 10px;
 }
 
 
@@ -319,4 +319,3 @@ hr{
 .uilib-btn.btn-xlarge {
     padding: 12px 25px;
 }
-
