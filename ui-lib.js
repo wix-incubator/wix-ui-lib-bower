@@ -25,15 +25,15 @@
 	}
 	function definePlugin(name, pluginPrototypeDefinition, skipValidation) {
 		'use strict';
-
+				
 		var Plugin = (new Function('return ' + definePlugin.tpl.replace(/\$\$\$/gm, name)))();
 		Plugin.prototype = pluginPrototypeDefinition($);
-
+		
 		if(!skipValidation){
 			definePlugin.validate(Plugin, name);
 		}
-
-		definePlugin.installMandatoryFunctions(Plugin, name);
+		
+		definePlugin.installMandatoryFunctions(Plugin, name);		
 		definePlugin.registerAsJqueryPlugin(Plugin, name);
         definePlugin.save(Plugin, name);
 		return Plugin;
@@ -42,26 +42,26 @@
 	definePlugin.validate = function(Plugin, name){
 
 		var reservedFunctions = [
-			'triggerChangeEvent',
-			'destroy',
-			'whenDestroy',
+			'triggerChangeEvent', 
+			'destroy', 
+			'whenDestroy', 
 			'getParamKey',
 			'getModelKey',
 			'UI'
 		].filter(function (key) {
 			return Plugin.prototype.hasOwnProperty(key);
 		});
-
+		
 		if (reservedFunctions.length) {
 			throw new Error('Plugin: ' + name + ' must NOT implement: "' + reservedFunctions.join(', ') + '"');
 		}
-
+		
 		var missingFunction = [
-			'getValue',
-			'setValue',
-			'init',
-			'getDefaults',
-			'bindEvents',
+			'getValue', 
+			'setValue', 
+			'init', 
+			'getDefaults', 
+			'bindEvents', 
 			'markup'
 		].filter(function (key) {
 			return typeof Plugin.prototype[key] !== 'function';
@@ -71,7 +71,7 @@
 			throw new Error('Plugin: ' + name + ' must implement: "' + missingFunction.join(', ') + '"');
 		}
 	}
-
+	
 	definePlugin.registerAsJqueryPlugin = function (Plugin, name) {
 		if (window.jQuery && window.jQuery.fn) {
 			window.jQuery.fn[name] = function (options, argument) {
@@ -89,29 +89,29 @@
 			};
 		}
 	}
-
+	
 	definePlugin.installMandatoryFunctions = function (Plugin, name){
 		if (!Plugin.name) {
 			Plugin.name = name;
 		}
 		Plugin.prototype.constructor = Plugin;
 		Plugin.unique_id_counter = 0;
-
+		
 		Plugin.prototype.UI = function(data){
 			return window.Wix.UI || window.UI;
-		};
+		};		
 		Plugin.prototype.triggerChangeEvent = function(data){
 			this.$el.trigger(name + '.change', data);
 		};
-
+				
 		Plugin.prototype.getParamKey = function(data){
 			return this.$el.attr('wix-param') || this.$el.attr('data-wix-param');
 		};
-
+						
 		Plugin.prototype.getModelKey = function(data){
 			return this.$el.attr('wix-model') || this.$el.attr('data-wix-model');
 		};
-
+				
 		Plugin.prototype.destroy = function(){
 			this.$el.off();
 			this.$el.find('*').off();
@@ -126,12 +126,12 @@
 			}, this);
 			this.$el.remove();
 		};
-
+		
 		Plugin.prototype.whenDestroy = function(fn){
 			if(typeof fn !== 'function'){ throw new Error('Destroy handler must be a function');}
 			this.destroyHandlers.push(fn);
 		};
-
+	
 	}
 
     definePlugin.save = function(Plugin, name){
@@ -139,29 +139,29 @@
         definePlugin.store[name] = Plugin;
     }
 
-	definePlugin.tpl = "function $$$(el, options) { "+
+	definePlugin.tpl = "function $$$(el, options) { "+ 
 		"'use strict';" +
 		"if (!(this instanceof $$$)) {" +
-			"throw new Error('Plugin: $$$ must called with the \"new\" keyword');" +
+			"throw new Error('Plugin: $$$ must called with the \"new\" keyword');" + 
 		"}" +
-		"this.$el = window.jQuery(el);" +
-		"this.options = window.jQuery.extend({}, this.getDefaults(), options);" +
-		"this.pluginName = '$$$';" +
-		"el.$uiLibPluginName = '$$$';" +
-		"this.destroyHandlers = [];" +
-		"this.GUID = '$$$_' + ($$$.unique_id_counter++);" +
+		"this.$el = window.jQuery(el);" + 
+		"this.options = window.jQuery.extend({}, this.getDefaults(), options);" + 
+		"this.pluginName = '$$$';" + 
+		"el.$uiLibPluginName = '$$$';" + 
+		"this.destroyHandlers = [];" + 
+		"this.GUID = '$$$_' + ($$$.unique_id_counter++);" + 
 		"this.init();" +
 		"return this;" +
 	"}";
 
-
-
+	
+	
 	$.fn.definePlugin = definePlugin;
 	$.fn.getCtrl = function(){
 		if(!this[0]){return null;}
 		return this.data('plugin_' + this[0].$uiLibPluginName);
 	};
-
+	
 }(jQuery))
 
 
@@ -176,7 +176,7 @@ var createColorBox = (function (){
 		// it is also works in all browsers that support svg img url       //
 		//                                                                 //
 		/////////////////////////////////////////////////////////////////////
-
+		
 		'use strict';
 		var ieG = (function (dir, stops) {
 			//{offset:'0%',color:'black', opacity:'1'}
@@ -199,7 +199,7 @@ var createColorBox = (function (){
 				return r;
 			};
 		})();
-
+		
 		//atob btoa polyfill
 		;(function () {
 			var
@@ -254,7 +254,7 @@ var createColorBox = (function (){
 					return output;
 			});
 		}());
-
+	
 		var photoshopG1 = ieG('bottom',[
 			{offset:'0%',color:'black', opacity:'1'},
 			{offset:'100%',color:'black', opacity:'0'}
@@ -359,7 +359,7 @@ var createColorBox = (function (){
 				return [0,0,0,0];
 			}
 		}
-
+		
 		function colorToHex(color){
 			var hsla = cssColorToHsl(color);
 			var rgba = hslToRgb.apply(null, hsla);
@@ -367,9 +367,9 @@ var createColorBox = (function (){
 			rgba[1] = rgba[1] << 0;
 			rgba[2] = rgba[2] << 0;
 			var hex = rgbToHex.apply(null, rgba);
-			return hex;
+			return hex;			
 		}
-
+		
 		function cssColorToHsl(color){
 			var hsl;
 			if(color.charAt(2)==='l'){
@@ -397,8 +397,8 @@ var createColorBox = (function (){
 		//////////////////////////////////////////////////////////////////////
 
 		function createColorPickerMarkup(element){
-			var html =
-				'<div class="colorpicker-wrapper">' +
+			var html = 
+				'<div class="colorpicker-wrapper">' + 
 					'<div class="colorpicker-pickers">'+
 					  '<div class="colorpicker-lightsat-palete"></div>'+
 					  '<div class="colorpicker-color-palete"></div>'+
@@ -414,15 +414,15 @@ var createColorBox = (function (){
 						'<label style="display:none">Opacity</label>'+
 						'<input style="display:none" type="text" class="colorpicker-opacity"/>'+
 					'</div>'+
-					'<div class="colorpicker-picker-inputs-extra">' +
+					'<div class="colorpicker-picker-inputs-extra">' + 
 						'<label>#</label>'+
 						'<input type="text" class="colorpicker-color"/>'+
 						'<div class="change-picker-label">Site colors</div>'+
-					'</div>' +
+					'</div>' + 
 				'</div>'+
 				'<div class="colorpicker-picker-selected">'+
 				  '<div class="colorpicker-priveuse colorpicker-opacity-back"></div>'+
-				  '<div class="colorpicker-current colorpicker-opacity-back"></div>' +
+				  '<div class="colorpicker-current colorpicker-opacity-back"></div>' + 
 				'</div>';
 			if(element.className.indexOf('uilib-colorpicker') === -1){
 				if(element.className.length===0){
@@ -431,10 +431,10 @@ var createColorBox = (function (){
 					element.className += ' uilib-colorpicker';
 				}
 			}
-
+			
 			element.innerHTML = html;
 		}
-
+		
 		function SimpleEvents(ctx, events){
 			events = events || {};
 			events.call = function(eventName){
@@ -451,10 +451,10 @@ var createColorBox = (function (){
 						events[eventName].splice(i, 1);
 					}
 				}
-			};
+			};	
 			return events;
 		}
-
+		
 		function getOffset( el ) {
 			var _x = 0;
 			var _y = 0;
@@ -481,8 +481,8 @@ var createColorBox = (function (){
 			el.style.cssText = 'width:' + width + ';height:' + height + ';';
 			appendTo && appendTo.appendChild(el);
 			return el;
-		}
-
+		}	
+		
 		//////////////////////////////////////////////////////////////////////
 		/////////////// this chank of code is the real thing /////////////////
 		//////////////////////////////////////////////////////////////////////
@@ -542,7 +542,7 @@ var createColorBox = (function (){
 					x = 1 - hsla[1];
 					t = ((hsla[2] * 100) + (50 * x) + 50)/50;
 					y = t / (x + 1);
-					y = 1 - (y-1);
+					y = 1 - (y-1);				
 					if(y < 0){
 						x -= y;
 						y=0;
@@ -662,12 +662,12 @@ var createColorBox = (function (){
 				}
 			}
 		};
-
+		
 		return function (element, initColor, onChangePicker) {
 			var drag = false;
 			var onselectstart = null;
 			var colorPicker = element;
-
+			
 			var events = SimpleEvents(colorPicker, {
 				oncolorpickerchange: [],
 				onpickerclick: [],
@@ -681,18 +681,18 @@ var createColorBox = (function (){
 			var palete = Object.create(paletes.palete);
 			var picker = Object.create(paletes.photoshop);
 			var preview = Object.create(paletes.single);
-			var result = Object.create(paletes.single);
+			var result = Object.create(paletes.single);		
 			var opacity = Object.create(paletes.opacity);
-
-
-			createColorPickerMarkup(colorPicker);
+			
+			
+			createColorPickerMarkup(colorPicker);		
 
 			palete.setElement(colorPicker.querySelector('.colorpicker-color-palete'),  initColor);
 			picker.setElement(colorPicker.querySelector('.colorpicker-lightsat-palete'), palete, initColor);
 			opacity.setElement(createElement('100%', '100%', colorPicker.querySelector('.colorpicker-opacity-palete')), initColor);
 			preview.setElement(createElement('100%', '100%', colorPicker.querySelector('.colorpicker-current')), initColor);
 			result.setElement(createElement('100%', '100%', colorPicker.querySelector('.colorpicker-priveuse')), initColor);
-
+		
 			var updateAllInputs = bindToinputs(colorPicker.querySelector('.colorpicker-picker-inputs'), colorPicker.querySelector('.colorpicker-picker-inputs-extra'), initColor);
 
 			colorPicker.addEventListener('mousedown', startDrag, false);
@@ -711,7 +711,7 @@ var createColorBox = (function (){
 				if (target === opacity.elm) {
 					//palete.hueFormPos(offset);
 					opacity.setPos(offset.y);
-					color = picker.colorFromPos(picker.pos, palete.paletePosY, opacity.getOpacity());
+					color = picker.colorFromPos(picker.pos, palete.paletePosY, opacity.getOpacity());                
 					events.call('onopacity' + fireEventName, color);
 				}
 				if (target === picker.elm) {
@@ -731,29 +731,29 @@ var createColorBox = (function (){
 				preview.render(color);
 				opacity.setColor(color);
 			}
-
+			
 			function bindToinputs(inputs, extra, initColor){
-
+							
 				var hueEl = inputs.querySelector('.colorpicker-hue');
 				var saturationEl = inputs.querySelector('.colorpicker-saturation');
 				var lightnessEl = inputs.querySelector('.colorpicker-lightness');
 				var opacityEl = inputs.querySelector('.colorpicker-opacity');
 				var colorEl = colorPicker.querySelector('.colorpicker-color');
-
+							
 				colorPicker.querySelector('.change-picker-label').onclick = function(){
 					onChangePicker && onChangePicker(null);
 				};
 
 				updateInputs(initColor);
-
+				
 				events.on('oncolorpickerchange', updateInputs);
-
-				inputs.addEventListener('change', validateInputs, false);
+								
+				inputs.addEventListener('change', validateInputs, false);			
 				inputs.addEventListener('change', setColorFromInputs, false);
-
-				extra.addEventListener('change', validateInputs, false);
+				
+				extra.addEventListener('change', validateInputs, false);			
 				extra.addEventListener('change', setColorFromInputs, false);
-
+				
 				function updateColorElm(rgba){
 					if(useHex){
 						colorEl.value = rgbToHex(rgba[0], rgba[1], rgba[2]).substr(1);
@@ -764,7 +764,7 @@ var createColorBox = (function (){
 				function getColorElValue(){
 					return useHex ? '#'+colorEl.value : colorEl.value;
 				}
-
+				
 				function setColorFromInputs(evt){
 					if(evt.target === colorEl){
 						try{
@@ -774,20 +774,20 @@ var createColorBox = (function (){
 							return events.call('oncolorpickerchange', getColorElValue());//updateInputs(colorEl.value);
 						}catch(err){}
 					}
-
+				
 					var color =  'hsla(' + hueEl.value + ',' + saturationEl.value + '%,' +  lightnessEl.value + '%,' +  opacityEl.value + ')';
 					var rgba = hslToRgb.apply(null, [hueEl.value/360, saturationEl.value/100, lightnessEl.value/100, opacityEl.value]);
 					rgba[0] = rgba[0] << 0;
 					rgba[1] = rgba[1] << 0;
 					rgba[2] = rgba[2] << 0;
-
+					
 					updateColorElm(rgba);
 					renderColorPicker(colorEl.value);
 					result.render(getColorElValue());
 					preview.render(getColorElValue());
 					events.call('oncolorpickerchange', getColorElValue());
 				}
-
+				
 				function validateInputs (evt){
 					if(evt.target === hueEl){
 						evt.target.value = Math.max(Math.min(evt.target.value, 360), 0) || 0;
@@ -799,14 +799,14 @@ var createColorBox = (function (){
 						evt.target.value = Math.max(Math.min(evt.target.value, 1), 0) || 1
 					}
 				}
-
+				
 				function updateInputs(color){
 					var hsla = cssColorToHsl(color);
 					hueEl.value = (hsla[0] * 360)<<0;
 					saturationEl.value = (hsla[1] * 100)<<0 ;
 					lightnessEl.value = (hsla[2] * 100)<<0;
 					opacityEl.value = Number.prototype.toFixed.call(+hsla[3], 4);
-
+					
 					var rgba = hslToRgb.apply(null, hsla);
 					rgba[0] = rgba[0] << 0;
 					rgba[1] = rgba[1] << 0;
@@ -814,17 +814,17 @@ var createColorBox = (function (){
 					//rgbToHex.apply(null, rgba);
 					updateColorElm(rgba);
 					//colorEl.value = 'rgba(' + rgba[0] +',' + rgba[1] +','+ rgba[2] +','+ rgba[3] +')';
-				}
-
+				}	
+				
 				return updateInputs;
-
+				
 			}
 
 			function dragMove(e){
 				if(!drag){return;}
 				preview.render(updatePicker(drag, offsetPosFromEvent(e, drag), 'move'))
 			}
-
+					
 			function stopDrag (e) {
 				if (drag) {
 					document.body.onselectstart = onselectstart;
@@ -835,12 +835,12 @@ var createColorBox = (function (){
 					preview.render(color);
 				}
 			}
-
+			
 			function startDrag (e) {
 				onselectstart = document.body.onselectstart || null;
 				document.body.onselectstart = function(){ return false; }//setAttribute('onselectstart' ,'return false');
 				drag = e.target;
-
+				
 				var color = updatePicker(drag, offsetPosFromEvent(e, drag), 'click');
 				preview.render(color);
 			}
@@ -852,10 +852,10 @@ var createColorBox = (function (){
 					renderColorPicker(color);
 					updateAllInputs(color);
 					return this;
-				},
+				},			
 				getColor : function () {
 					return result.colorFromPos();
-				},
+				},            
 				isVisible: function(){
 					return colorPicker.style.display !== 'none';
 				},
@@ -875,12 +875,12 @@ var createColorBox = (function (){
 	//////////////////////////////////////////////////////////////////////
 	////////////////////// this is how to use it /////////////////////////
 	//////////////////////////////////////////////////////////////////////
-	//var colorPicker2 = ColorPicker(colorBoxPicker/*document.querySelector('.colorpicker')*/, '#888888');
+	//var colorPicker2 = ColorPicker(colorBoxPicker/*document.querySelector('.colorpicker')*/, '#888888');	
 
 	function createColorPalete(options){
-
+		
 		var selectedColorNode = {};
-
+		
 		var colorPaleteInstance = {
 			elm: colorPalete,
 			hide: function(){
@@ -894,7 +894,7 @@ var createColorBox = (function (){
 				var colorNode = filterColorNode(function(colorNode){
 					var tname = colorNode.$dataColor.reference;
 					return tname && (tname === color.reference || tname === color || color === colorNode.$dataColor.value);
-				}, true);
+				}, true);	
 				colorPaleteInstance.removeSelection();
 				if(colorNode){
 					setColor(colorNode);
@@ -905,36 +905,36 @@ var createColorBox = (function (){
 				selectedColorNode = {};
 			}
 		};
-
+		
 		var colorPaleteInnerWrapper = document.createElement('div');
 		colorPaleteInnerWrapper.className = 'colorpicker-wrapper';
 
-
+			
 		var changePickerLabel = document.createElement('div');
 		changePickerLabel.className = 'change-picker-label';
 		changePickerLabel.innerHTML = 'All colors';
-
+		
 		var colorPalete = document.createElement('div');
 		colorPalete.className = 'colorpicker simple-color-palete';
 		colorPalete.style.width = options.width || 'auto';
 		colorPalete.style.height = options.height || 'auto';
-
+		
 		var y=-1, x=0;
 		for(var i = 0; i < options.paleteColors.length;i++){
 			x = i % 5;
 			x = x * 5;
 			y += x === 0 ? 1 : 0;
-			colorPaleteInnerWrapper.appendChild(createColorNode(options.paleteColors[x+y], 'simple-color-node'));
+			colorPaleteInnerWrapper.appendChild(createColorNode(options.paleteColors[x+y], 'simple-color-node'));		
 		}
-
+		
 		options.primColors.forEach(function(color){
-			colorPaleteInnerWrapper.appendChild(createColorNode(color, 'simple-color-node prim-color'));
+			colorPaleteInnerWrapper.appendChild(createColorNode(color, 'simple-color-node prim-color'));		
 		});
-
+		
 		colorPaleteInnerWrapper.appendChild(changePickerLabel);
 		colorPalete.appendChild(colorPaleteInnerWrapper);
 		options.parent.appendChild(colorPalete);
-
+		
 		colorPalete.onclick = function(evt){
 			if(evt.target === colorPalete){ return }
 			if(evt.target.className.indexOf('simple-color-node') !== -1 && evt.target.className.indexOf('color-node-selected') === -1){
@@ -942,21 +942,21 @@ var createColorBox = (function (){
 				options.onchange && options.onchange.call(null,getValue());
 			}
 		};
-
+		
 		if(options.selected){
 			colorPaleteInstance.setColor(options.selected);
 		}
-
+		
 		function setColor(colorNode){
 			selectedColorNode.className = 'simple-color-node';
 			selectedColorNode = colorNode;//evt.target;
 			selectedColorNode.className += ' color-node-selected';
 		}
-
+		
 		changePickerLabel.onclick = function(){
 			options.onchangepicker && options.onchangepicker.call();
 		}
-
+		
 		function createColorNode(color, className){
 			var colorNode = document.createElement('div');
 			colorNode.className = className;
@@ -964,12 +964,12 @@ var createColorBox = (function (){
 			colorNode.$dataColor = color;
 			return colorNode;
 		}
-
-
+		
+		
 		function getValue(){
 			return selectedColorNode.$dataColor;
 		}
-
+		
 		function filterColorNode(fn, isOneRes){
 			var child;
 			var f = [];
@@ -986,9 +986,9 @@ var createColorBox = (function (){
 			}
 			return isOneRes ? null : f;
 		}
-
-
-
+		
+		
+		
 		return colorPaleteInstance;
 	}
 
@@ -1002,13 +1002,13 @@ var createColorBox = (function (){
 			setColor: function(color){
 				var colorFromTheme = findReferanceName(color);
 				if(colorFromTheme){
-					cb.colorPalete.setColor(colorFromTheme.reference);
+					cb.colorPalete.setColor(colorFromTheme.reference);	
 					cb.colorPicker.setColor(colorFromTheme.value);
 					setBoxInnerColor(colorFromTheme.value, colorFromTheme);
 				} else {
-					cb.colorPalete.setColor(color);
+					cb.colorPalete.setColor(color);	
 					cb.colorPicker.setColor(color);
-					setBoxInnerColor(color, false);
+					setBoxInnerColor(color, false);					
 				}
 			},
 			getColor: function(){
@@ -1018,20 +1018,20 @@ var createColorBox = (function (){
 				return cb.colorObject;
 			}
 		}
-
+		
 		function initialize(){
 
 			markup();
 			var ref = findReferanceName(options.color);
 
 			cb.colorPicker = ColorPicker(cb.colorBoxPicker, ref ? ref.value : options.color, showSimplePicker);
-
+			
 			cb.colorPicker.on('oncolorpickerchange', function(color){
 				cb.colorPalete.removeSelection();
 				setBoxInnerColor(color, false);
 				options.onchange && options.onchange(color);
 			});
-
+				
 			cb.colorPalete = createColorPalete({
 				width: '182px',
 				parent: cb.popup.content,
@@ -1047,21 +1047,21 @@ var createColorBox = (function (){
 				paleteColors: options.paleteColors || [],
 				primColors: options.primColors || []
 			});
-
+			
 			showSimplePicker();
-
+			
 			ref ? setBoxInnerColor(ref.value, ref) : setBoxInnerColor(options.color, false);
-
-			hidePickers();
+			
+			hidePickers();	
 			bindEvents();
 
 			return pickerInstance;
 		}
 
 		function markup(){
-
+			
 			cb.colorBox = options.element || document.createElement('div');
-
+			
 			cb.popup = $('<div>').Popup({
 				appendTo: cb.colorBox,
 				title : 'ColorPicker',
@@ -1069,25 +1069,26 @@ var createColorBox = (function (){
 				height : 'auto',
 				width : 'auto',
                 fixed: true,
+                maxPopupWidth: 265,
 				onclose : function () {
 					pickerInstance.hidePickers();
 				},
 				oncancel: function() {
 					if(pickerInstance.getColorObject() || pickerInstance.getColor() !== cb.openedColor){
 						pickerInstance.setColor(cb.openedColor);
-						options.onchange && options.onchange(cb.openedColor);
+						options.onchange && options.onchange(cb.openedColor);	
 					}
-					pickerInstance.hidePickers();
+					pickerInstance.hidePickers();				
 				},
 				onopen: function(){
 					cb.colorBox.appendChild(this.arrow);
 				},
-				onposition: function(){}
+				onposition: function(){}	
 			}).getCtrl();
-
+			
 			cb.popup.setRelativeElement(cb.colorBox)
-
-
+			
+			
 			cb.colorBoxPicker = document.createElement('div');
 			cb.colorBoxInner = document.createElement('div');
 			cb.colorBoxInnerArrow = document.createElement('div');
@@ -1096,15 +1097,15 @@ var createColorBox = (function (){
 			cb.colorBox.className = 'uilib-color-box';
 			cb.colorBoxInner.className = 'color-box-inner';
 			cb.colorBoxInnerArrow.className = 'color-box-inner-arrow';
-
+			
 			cb.popup.content.appendChild(cb.colorBoxPicker);
-
+			
 			cb.colorBox.appendChild(cb.colorBoxInner);
 			cb.colorBox.appendChild(cb.colorBoxInnerArrow);
-
+			
 			options.parent && options.parent.appendChild(cb.colorBox);
 		}
-
+		
 		function findReferanceName(ref){
 			if(!ref){
 				return false
@@ -1122,12 +1123,12 @@ var createColorBox = (function (){
 			}
 			return false;
 		}
-
+		
 		function bindEvents(){
 			cb.colorBox.onclick = function(evt){
 				evt.stopPropagation && evt.stopPropagation();
-				evt.prevetDefault && evt.prevetDefault();
-
+				evt.prevetDefault && evt.prevetDefault();		
+		
 				if(evt.target === cb.colorBox || evt.target === cb.colorBoxInner || evt.target === cb.colorBoxInnerArrow){
                     if(!cb.popup.isOpen()){
                         showPickers();
@@ -1135,30 +1136,30 @@ var createColorBox = (function (){
 				}
 				return false;
 			}
-
+		
 		}
 
-		function saveOpendColor(){
+		function saveOpendColor(){			
 			cb.openedColor = options.isParamConected ? (pickerInstance.getColorObject() || pickerInstance.getColor()) : pickerInstance.getColor();
 		}
-
+		
 		function showSimplePicker(){
 			cb.popup.setTitle('Site Colors');
 			cb.colorPicker.hide();
 			cb.colorPalete.show();
 		}
-
+		
 		function showAdvancePicker(){
 			cb.popup.setTitle('All Colors');
 			cb.colorPalete.hide();
 			cb.colorPicker.show();
 		}
-
+		
 		function hidePickers(){
 			enableTextSelection();
 			cb.popup.close();
 		}
-
+		
 		function showPickers(){
 			saveOpendColor();
 			disableTextSelection();
@@ -1179,23 +1180,23 @@ var createColorBox = (function (){
 		function disableTextSelection(){
 			disableTextSelection.onselectstart = document.onselectstart || null;
 			disableTextSelection.onmousedown = document.onmousedown || null;
-			document.onmousedown = document.onselectstart = function(evt) {
+			document.onmousedown = document.onselectstart = function(evt) { 
 				if((evt.target.tagName && (evt.target.tagName.toLowerCase() === 'textarea' || evt.target.tagName.toLowerCase() === 'input')) || evt.ctrlKey){
 					return true;
 				}
-				return false;
+				return false; 
 			}
 		}
-
+		
 		function enableTextSelection(){
 			document.onselectstart = disableTextSelection.onselectstart || null;
 			document.onmousedown = disableTextSelection.onmousedown || null;
 			disableTextSelection.onselectstart = null;
 			disableTextSelection.onmousedown = null;
 		}
-
+		
 		return initialize();
-
+		
 	}
 
 	return createColorBox;
@@ -1204,10 +1205,10 @@ var createColorBox = (function (){
 (function (exports){
 
 	holdJQueryDOMReady(exports.__disableStandaloneError__);
-
+	
 	var model = createModel();
 	var styleModel = createModel();
-
+	
 	exports.UI = {
 		initialize         : initialize,
 		initializePlugin   : initializePlugin,
@@ -1226,7 +1227,7 @@ var createColorBox = (function (){
 			toJSON: styleModel.toJSON
 		}*/
 	};
-
+	
 	function createPlugin(setup) {
 		var $el = $('<div>');
 		setup.id && $el.prop('id', setup.id);
@@ -1298,13 +1299,13 @@ var createColorBox = (function (){
 				timeoutTicket = setTimeout(function(){
 					holdReady(false);
 					if(!exports.__disableStandaloneError__ ){
-						throw new Error('Style params are not available outside of the "wix editor", if you are in the editor ');
+						throw new Error('Style params are not available outside of the "wix editor", if you are in the editor ');		
 					}
 				}, 3333);
 				(Wix.Styles || Wix).getStyleParams(function(){
 					clearTimeout(timeoutTicket);
 					holdReady(false);
-				});
+				});				
 			}
 		}
 
@@ -1312,7 +1313,7 @@ var createColorBox = (function (){
 			window.jQuery && window.jQuery.holdReady && window.jQuery.holdReady( hold );
 		}
 	}
-
+	
 	function getVendorProductId() {
 		try {
 			var inst = window.location.search.match(/instance=([^&]+)/);
@@ -1321,7 +1322,7 @@ var createColorBox = (function (){
 			return null;
 		}
 	}
-
+	
 	function applyPremiumItems($rootEl){
 		var $premium = $rootEl.find('[wix-premium],[data-wix-premium]');
 		var $notPremium = $rootEl.find('[wix-not-premium], [data-wix-not-premium]');
@@ -1334,7 +1335,7 @@ var createColorBox = (function (){
 			$notPremium.show();
 		}
 	}
-
+	
 	function getAttribute(element, attr) {
 		var val = element.getAttribute(attr);
 		if (!val) {
@@ -1342,7 +1343,7 @@ var createColorBox = (function (){
 		}
 		return val;
 	}
-
+		
     function initializePlugin(element, overrideOptions) {
 		if(element instanceof jQuery){
 			return element.each(function(){
@@ -1370,7 +1371,7 @@ var createColorBox = (function (){
     function getCtrl(element){
         return getAttribute(element, 'wix-controller') || getAttribute(element, 'wix-ctrl');
     }
-
+    
     function destroyPlugin(element, removeModel) {
         if(element instanceof jQuery){
             return element.each(function(){
@@ -1383,20 +1384,18 @@ var createColorBox = (function (){
 		var $el = $(element);
 		var plugin = $el.data('plugin_'+pluginName);
 
-        if(wixModel){
-			if(plugin.destroy){
-				plugin.destroy();
-			} else {
-				$el.off();
-				$el.find('*').off();
-				$el.remove();
-			}
-			if(removeModel){
-				model.removeKey(wixModel);
-			}
+        if(plugin && plugin.destroy){
+            plugin.destroy();
+        } else {
+            $el.off();
+            $el.find('*').off();
+            $el.remove();
+        }
+        if(removeModel){
+            model.removeKey(wixModel);
         }
     }
-
+	
 	function applyPlugin(element, pluginName, options) {
 		pluginName = fixPluginName(pluginName);
 		if ($.fn[pluginName]) {
@@ -1463,7 +1462,7 @@ var createColorBox = (function (){
         }
 		return $.trim(ctrl);
     }
-
+	
 	function createModel() {
 		var model = {
 			props : {},
@@ -1622,9 +1621,9 @@ var createColorBox = (function (){
 				}
 			});
 
-
+			
 		}
-
+		
 		function isFontStyleParam(value){
 			return value.fontStyleParam === true ? true : false
 		}
@@ -1652,7 +1651,7 @@ var createColorBox = (function (){
 				if(initValues.hasOwnProperty(key)){
 					styleModel.set(key, initValues[key]);
 				}
-			}
+			}		
 		}
 	}
 
@@ -1706,7 +1705,7 @@ var createColorBox = (function (){
 
 
 jQuery.fn.definePlugin('Accordion', function($){
-
+	
 	return {
 		init: function(){
 			this.markup();
@@ -1750,10 +1749,10 @@ jQuery.fn.definePlugin('Accordion', function($){
 			} else {
 				$toOpen = $panels.eq(this.options.value || 0);
 			}
-
+			
 			var $openByDefault = this.$el.find('.'+opt.triggerClass+'.' + opt.openByDeafult)
 			$toOpen = $toOpen.add($openByDefault);
-
+			
 			$toOpen.addClass(opt.activeClass + ' ' + opt.openByDeafult)
 				.find('.'+opt.contentClass)
 				.css('display','block');
@@ -1770,7 +1769,7 @@ jQuery.fn.definePlugin('Accordion', function($){
 		setValue: function ($el) {
 			var opt = this.options;
 			if(typeof $el === 'number'){
-				$el = this.$el.find('.' + opt.triggerClass).eq($el);
+				$el = this.$el.find('.' + opt.triggerClass).eq($el); 
 			}
 			if ($el.find('.' + opt.contentClass).is(':hidden')) {
 				this.openElementContent($el);
@@ -1791,10 +1790,10 @@ jQuery.fn.definePlugin('Accordion', function($){
 		openElementContent: function ($el) {
 			var opt = this.options;
 			this.closeElementContent($el);
-
+			
 			var $active = $el.toggleClass(opt.activeClass).find('.'+opt.contentClass);
 			$active.slideDown(opt.animationTime, opt.ease, function(){
-				$active.css('overflow', 'visible');
+				$active.css('overflow', 'visible');			
 				$(document.body).trigger('uilib-update-scroll-bars');
 			});
 		},
@@ -1817,7 +1816,7 @@ jQuery.fn.definePlugin('Accordion', function($){
 });
 jQuery.fn.definePlugin('ButtonGroup', function($){
 	'use strict';
-
+	
 	var names = {
 		btnGroupClass : 'btn-group',
 		valueAttrName : 'data-value',
@@ -1832,7 +1831,7 @@ jQuery.fn.definePlugin('ButtonGroup', function($){
 			toggle: 'toggle'
 		}
 	};
-
+	
 	return {
 		init: function(){
 			this.$selected = null;
@@ -1915,16 +1914,16 @@ jQuery.fn.definePlugin('ButtonGroup', function($){
 		},
 		bindEvents: function () {
 			var btnGroup = this;
-
+			
 			this.$el.on('click', '.' + names.btnBaseClass, function () {
 				btnGroup.isSingleMode() ? handleClickSingle($(this)) : handleClickToggle($(this));
 			});
-
+			
 			function handleClickToggle($el){
 				btnGroup.toggleActiveClass($el);
 				btnGroup.triggerChangeEvent(btnGroup.getValue());
 			}
-
+			
 			function handleClickSingle($el){
 				var value = btnGroup.getValueFromEl($el);
 				if (btnGroup.getValueFromEl(btnGroup.$selected) !== value) {
@@ -1934,12 +1933,12 @@ jQuery.fn.definePlugin('ButtonGroup', function($){
 			}
 		}
 	};
-
+	
 });
 
 jQuery.fn.definePlugin('ToggleButtonGroup', function($){
 	'use strict';
-
+	
 	return {
 		init: function(){
 			this.options.mode = 'toggle';
@@ -1949,7 +1948,7 @@ jQuery.fn.definePlugin('ToggleButtonGroup', function($){
 			return {
 				value:0
 			}
-		},
+		},		
 		setValue: function (value) {
 			return this.buttonGroup.setValue(value);
 		},
@@ -1959,22 +1958,22 @@ jQuery.fn.definePlugin('ToggleButtonGroup', function($){
 		bindEvents: function () {},
 		markup: function () {}
 	};
-
+	
 });
 
 jQuery.fn.definePlugin('Checkbox', function($){
 	'use strict';
-
+	
 	var names = {
 		checkboxClass: 'uilib-checkbox',
 		checkedClass: 'checked'
 	};
-
+	
 	return {
 		init:function(){
 			this.options.value = this.options.value !== undefined ? this.options.value : this.options.checked;
 			this.markup();
-			this.bindEvents();
+			this.bindEvents();	
 			this.setValue(this.options.checked);
 		},
 		getDefaults: function(){
@@ -1986,17 +1985,17 @@ jQuery.fn.definePlugin('Checkbox', function($){
 			};
 		},
 		markup: function() {
-
+			
 			if(!this.$el.hasClass(names.checkboxClass)){
 				this.$el.addClass(names.checkboxClass);
 			}
-
+			
 			this.$el.append('<span class="uilib-checkbox-check"></span>');
 
 			if(this.options.preLabel){
 				this.$el.prepend('<span class="uilib-text uilib-checkbox-preLabel">' + this.options.preLabel + '</span>');
 			}
-
+			
 			if(this.options.postLabel){
 				this.$el.append('<span class="uilib-text uilib-checkbox-postLabel">' + this.options.postLabel + '</span>');
 			}
@@ -2011,16 +2010,16 @@ jQuery.fn.definePlugin('Checkbox', function($){
 			value ? this.$el.addClass(names.checkedClass) : this.$el.removeClass(names.checkedClass);
 		},
 		toggleChecked: function() {
-			this.$el.toggleClass(names.checkedClass);
+			this.$el.toggleClass(names.checkedClass);		
 			this.triggerChangeEvent(this.getValue());
-		}
+		}		
 	};
-
+	
 });
 
 jQuery.fn.definePlugin('ColorPicker', function ($) {
 	'use strict';
-
+	
 	var defaultColors = [
 			'#50FAFE', '#FFFFFF', '#0088CB', '#ED1C24', '#FFCB05',
             '#CECECE', '#9C9C9C', '#6C6C6C', '#484848', '#242424', '#C4EEF6', '#A5E1ED',
@@ -2029,14 +2028,14 @@ jQuery.fn.definePlugin('ColorPicker', function ($) {
 		].map(function(o,i){
 			return {value:o, reference:'color-'+i};
 		});
-
+	
 	return {
 		init: function(){
 			this.options.value = this.options.value !== undefined ? this.options.value : this.options.startWithColor;
 			this.isParamConected = this.options.isParamConected || (this.$el.attr('wix-param') || this.$el.attr('data-wix-param'));
 			//TODO test this.
 			this.siteColors = /*this.isParamConected ? */ true ? ((Wix.Styles || Wix.Settings).getSiteColors() || defaultColors) : defaultColors;
-			this.markup();
+			this.markup();		
 		},
 		getDefaults: function(){
 			return {
@@ -2054,7 +2053,7 @@ jQuery.fn.definePlugin('ColorPicker', function ($) {
 				paleteColors: this.siteColors.slice(5),
 				onchange: this.changeEventHandler.bind(this)
 			});
-
+		
 		},
 		getValue: function () {
 			return this.picker.getColor();
@@ -2074,12 +2073,12 @@ jQuery.fn.definePlugin('ColorPicker', function ($) {
 		changeEventHandler: function(color){
 			var that = this;
 			clearTimeout(this.$timeoutTicket);
-			this.$timeoutTicket = setTimeout(function(){
+			this.$timeoutTicket = setTimeout(function(){					
 				var data = {
 					cssColor: color
 				};
 				if(typeof color === 'string'){
-
+					
 				} else if (color && typeof color === 'object'){
 					data.color = color;
 					data.cssColor = color.value;
@@ -2095,7 +2094,7 @@ jQuery.fn.definePlugin('ColorPicker', function ($) {
 		},
 		bindEvents: function () {}
 	};
-
+	
 });
 
 jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
@@ -2131,10 +2130,10 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 		},
 		getValue: function () {
 			var plugs = this.getPlugins();
-
+			
 			var rgbString = plugs.colorPicker.getValue();
 			var sliderValue = plugs.slider.getValue() / 100;
-
+			
 			if(rgbString.indexOf('rgba') === 0 || rgbString.indexOf('hsla') === 0){
 				return rgbString.replace(/,\s*([\d\.]+)\s*\)/, ','+ sliderValue + ')');
 			} else {
@@ -2157,10 +2156,10 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 				color = extractColorFromValue(value);
 				opacity = extractOpacityFromColor(value) * 100;
 			}
-
+			
 			plugs.slider.setValue(opacity);
 			plugs.colorPicker.setValue(color);
-
+			
 		},
 		setOpacity: function (opacity) {
 			if(!opacity && opacity!==0){return;}
@@ -2187,8 +2186,8 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 			}
 		}
 	};
-
-
+	
+	
 	function extractOpacityFromColor(value){
 		var opacity =1;
 		value = $.trim(value);
@@ -2202,7 +2201,7 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 		}
 		return opacity;
 	}
-
+	
 	function extractColorFromValue(value){
 		var color;
 		value = $.trim(value);
@@ -2217,8 +2216,8 @@ jQuery.fn.definePlugin('ColorPickerWithOpacity', function ($) {
 		}
 		return color;
 	}
-
-
+	
+	
 });
 
 jQuery.fn.definePlugin('Dropdown', function($){
@@ -2251,14 +2250,14 @@ jQuery.fn.definePlugin('Dropdown', function($){
 	var dropdownCSS = {
 		position : 'relative'
 	};
-
+	
 	var arrows = {
 		down  : '<span class="dropdown-arrow dropdown-arrow-down"></span>',
 		up    : '<span class="dropdown-arrow dropdown-arrow-up"></span>',
 		left  : '<span class="dropdown-arrow dropdown-arrow-left"></span>',
 		right : '<span class="dropdown-arrow dropdown-arrow-right"></span>'
 	}
-
+	
 	return {
 		init: function(){
 			this.options.value = this.options.value !== undefined ? this.options.value : this.options.selected;
@@ -2302,7 +2301,7 @@ jQuery.fn.definePlugin('Dropdown', function($){
 						.addClass(names.optionClassName)
 						.addClass(this.className)
 
-
+					
 					if(appendChildren){
                         $option.append(this.children);
                     } else {
@@ -2319,10 +2318,10 @@ jQuery.fn.definePlugin('Dropdown', function($){
 						$option.addClass(names.hideTextClass);
 					}
 					var iconUrl = this.getAttribute('data-icon');
-
+					
 					if(iconUrl){
 						$option.prepend('<img src="'+iconUrl+'" class="'+names.iconClassName+'"/>');
-					}
+					}		
 					if(dd.options.spriteMap){
 						$option.addClass(dd.options.spriteMap+index);
 					}
@@ -2345,7 +2344,7 @@ jQuery.fn.definePlugin('Dropdown', function($){
 			this.$options.addClass('uilib-scrollbar');
 			this.$el.empty();
 			this.$el.append(arrows[/*this.options.arrow*/'down'], this.$selected, this.$options);
-		},
+		},		
 		setValue: function (value) {
 			var $option;
 			if(value && typeof value === 'object' && value.hasOwnProperty('value')/*&& value.hasOwnProperty('index') */){
@@ -2452,18 +2451,18 @@ jQuery.fn.definePlugin('Dropdown', function($){
 			function uilibDropdownOpen(evt, _dropdown){
 				if(_dropdown !== dropdown && _dropdown.isOpen){
 					dropdown.hideOptions();
-					dropdown.setActiveMode(false);
+					dropdown.setActiveMode(false);				
 				}
 			}
 			function winMousedown(evt) {
 				dropdown.hideOptions();
 				dropdown.setActiveMode(false);
 			}
-
+			
 			$(document).on('uilib-dropdown-open', uilibDropdownOpen);
-
+			
 			$(window).on('mousedown', winMousedown);
-
+			
 			this.whenDestroy(function(){
 				$(document).off('uilib-dropdown-open',uilibDropdownOpen);
 				$(window).off('mousedown', winMousedown);
@@ -2472,7 +2471,7 @@ jQuery.fn.definePlugin('Dropdown', function($){
 			this.$options.mousewheel && this.$options.mousewheel(function(evt){
 				evt.stopPropagation();
 			});
-
+			
 			this.$options.on('mouseenter', '.' + names.optionClassName, function () {
 				dropdown.highlightOption($(this));
 			});
@@ -2480,18 +2479,18 @@ jQuery.fn.definePlugin('Dropdown', function($){
 			this.$options.on('click', '.' + names.optionClassName, function () {
 				dropdown.setValueFromEl($(this));
 			});
-
+			
 			this.$el.on('click', function (evt) {
 				evt.stopPropagation();
 				dropdown.setActiveMode(true);
 				dropdown.toggleOptions();
 			});
-
+			
 			this.$el.on('mousedown', function (evt) {
 				evt.stopPropagation();
 			});
 
-
+			
 			var ENTER = 13,
 				SPACE = 32,
 				ESC = 27,
@@ -2502,7 +2501,7 @@ jQuery.fn.definePlugin('Dropdown', function($){
 				PAGE_DOWN = 34,
 				PAGE_MOVE_ITEMS = 5,
 				ARROW_MOVE_ITEMS = 1
-
+			
 			$(window).on('keydown', function (evt) {
 				var $el, dir, items;
 				if (dropdown.isActive) {
@@ -2517,16 +2516,16 @@ jQuery.fn.definePlugin('Dropdown', function($){
 						dropdown.setActiveMode(false);
 						evt.preventDefault();
 					}
-
+					
 					//up/down/pageup/pagedown
 					if (evt.which === UP || evt.which === DOWN || evt.which === PAGE_UP || evt.which === PAGE_DOWN) {
 						$el = dropdown.$options
 							.find('[' + names.indexAttrName + '="' + dropdown.getIndex() + '"]')
 							.eq(0);
-
+						
 						dir = (evt.which === UP || evt.which === PAGE_UP) ? 'prev' : 'next';
 						items = (evt.which === UP || evt.which === DOWN) ? ARROW_MOVE_ITEMS : ((dropdown.$options.height() / $el.height())<<0 || PAGE_MOVE_ITEMS);
-
+						
 						var _$el;
 						while (items--) {
 							_$el = $el;
@@ -2535,10 +2534,10 @@ jQuery.fn.definePlugin('Dropdown', function($){
 								$el  = _$el;
 							}
 						}
-
+						
 						dropdown.highlightOption($el);
 						dropdown.setValueFromEl($el);
-
+						
 						if($el.length){
 							dropdown.$options.clearQueue().animate({
 								scrollTop: dropdown.$options.scrollTop() + $el.position().top
@@ -2551,7 +2550,7 @@ jQuery.fn.definePlugin('Dropdown', function($){
 			});
 		}
 	};
-
+	
 });
 
 jQuery.fn.definePlugin('FixedPositionControl', function ($) {
@@ -2566,7 +2565,7 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 				verticalMargin : 0,
 				placement : 'TOP_LEFT'
 			};
-
+			
 			var defaults = _getDefaults();
 
 			this.$el = $(element);
@@ -2579,8 +2578,8 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 			} else {
 				this._init(defaults, options);
 			}
-
-
+			
+			
 		},
 		_init: function (defaults, options) {
 			_setUserEvents(defaults, options);
@@ -2592,14 +2591,14 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 
 		initWithBinding: function (defaults, options) {
 			var plugin = this;
-			getPlacement(function (state) {
+			getPlacement(function (state) {		
 				$.extend(plugin.state, state);
 				$.extend(defaults.slider, _getSliderEvents(plugin.state));
-				plugin.options = $.extend({}, defaults, options);
+				plugin.options = $.extend({}, defaults, options);			
 				plugin.slider = plugin.createSlider(plugin.options.slider);
 
 				$.extend(plugin.options.dropdown, _getDropdownEvents(plugin.state, plugin.slider));
-				plugin.dropdown = plugin.createDropDown(plugin.options.dropdown);
+				plugin.dropdown = plugin.createDropDown(plugin.options.dropdown);			
 			});
 		},
 
@@ -2608,29 +2607,29 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 			this.$slider = this.$el.find('.glued-slider');
 			return this.$slider.Slider(options).data('plugin_Slider');
 		},
-
+		
 		getDefaults: function(){
 			return {bindToWidget:true};
 		},
-
+		
 		markup: function () {},
 		setValue: function () {},
 		getValue: function () {},
 		bindEvents: function () {},
-
+		
 		createDropDown: function(options){
 			var plugin = this;
 			var $div = $('<div>');
 			var $options = this.$el.find(".glued-dropdown")
 				.html(this.dropdownHTML())
-				.find('select').replaceWith($div).find('option');
-
-			$options.attr('data-icon', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-
+				.find('select').replaceWith($div).find('option');				
+			
+			$options.attr('data-icon', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');		
+			
 			if(this.options.bindToWidget){
 				this.$el.on('Dropdown.change', function(evt, data){
 					updateSliderPlacement(plugin.state, plugin.slider, data.value);
-					setPlacement(plugin.state);
+					setPlacement(plugin.state);			
 				});
 			}
 
@@ -2702,7 +2701,7 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 			return '<p>Select the position for your widget</p><select name="positionSelection" class="positionSelection">' + options + '</select>';
 		}
 	}
-
+		
 
 	function setPlacement(state) {
 		Wix.Settings.setWindowPlacement(
@@ -2770,10 +2769,10 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 			}
         };
     }
-
-	//Ribbon for Glued
+	
+	//Ribbon for Glued 
 	function createRibbon(slider){
-
+		
 		var elWidth = slider.$el.width();
 
 		slider.$center = $('<div class="uilib-slider-back">');
@@ -2799,12 +2798,12 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 
 		slider.$ribbon = $('<div class="uilib-slider-back">').prependTo(slider.$el);
 	}
-
+	
 	function updateRibbon(slider, val){
 		var pinWidth = slider.$pin.width() / 2;
 		var elWidth = slider.$el.width() / 4;
 		var w, range;
-
+		
 		if(val > 1){
 			range = (val - 1);
 			w = elWidth * range;
@@ -2849,12 +2848,12 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 
 
 	}
-
+	
     function _getSliderEvents(state) {
         return {
             create : function () {
                 createRibbon(this);
-
+				
                 if (getPlacementOrientation(state) === 'other') {
                     this.$el.addClass('disabled');
                 } else {
@@ -2870,7 +2869,7 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
     }
 
     function _setUserEvents(defaults, options) {
-
+       
 		defaults.slider.create = function(){
 			createRibbon(this);
 			if (typeof options.sliderCreate === 'function') {
@@ -2879,7 +2878,7 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 		}
 
 		defaults.slider.slide = function(val){
-			updateRibbon(this, val);
+			updateRibbon(this, val);	
 			if (typeof options.sliderChange === 'function') {
 				options.sliderChange.apply(this, arguments);
 			}
@@ -2899,7 +2898,7 @@ jQuery.fn.definePlugin('FixedPositionControl', function ($) {
 jQuery.fn.definePlugin('FontPicker', function () {
 	'use strict';
 	var imageMock = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-
+	
 	return {
 		init : function () {
 			this.isParamMode = this.getParamKey();//this.$el.attr('wix-param') || this.$el.attr('data-wix-param');
@@ -2911,7 +2910,7 @@ jQuery.fn.definePlugin('FontPicker', function () {
 			var $dropEl = $('<div>');
 			appendSpriteMap(this.options.spriteUrl, $dropEl);
 			this.$el.append($dropEl);
-
+			
 			this.dropdown = $dropEl.Dropdown({
 					hideText : this.options.spriteUrl !== imageMock,
 					width : 265,
@@ -2952,10 +2951,22 @@ jQuery.fn.definePlugin('FontPicker', function () {
 	function getFontsSpriteUrl(){
 		return window.Wix && Wix.Styles && Wix.Styles.getFontsSpriteUrl() || imageMock;
 	}
-
+	
 	function getEditorFonts(){
-		return window.Wix && Wix.Styles && Wix.Styles.getEditorFonts() || [{lang:'', fonts:[{"displayName":"Arial","fontFamily":"arial","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"helvetica","spriteIndex":5,"cssFontFamily":"arial,helvetica,sans-serif"},{"displayName":"Arial Black","fontFamily":"arial black","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","cyrillic"],"permissions":"all","fallbacks":"gadget","spriteIndex":8,"cssFontFamily":"arial black,gadget,sans-serif"},{"displayName":"Comic Sans MS","fontFamily":"comic sans ms","cdnName":"","genericFamily":"cursive","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"comic-sans-w01-regular,comic-sans-w02-regular,comic-sans-w10-regular","spriteIndex":22,"cssFontFamily":"comic sans ms,comic-sans-w01-regular,comic-sans-w02-regular,comic-sans-w10-regular,cursive"},{"displayName":"Courier New","fontFamily":"courier new","cdnName":"","genericFamily":"monospace","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"courier-ps-w01,courier-ps-w02,courier-ps-w10","spriteIndex":30,"cssFontFamily":"courier new,courier-ps-w01,courier-ps-w02,courier-ps-w10,monospace"},{"displayName":"Georgia","fontFamily":"georgia","cdnName":"","genericFamily":"serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"palatino,book antiqua,palatino linotype","spriteIndex":48,"cssFontFamily":"georgia,palatino,book antiqua,palatino linotype,serif"},{"displayName":"Impact","fontFamily":"impact","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"impact-w01-2010,impact-w02-2010,impact-w10-2010","spriteIndex":79,"cssFontFamily":"impact,impact-w01-2010,impact-w02-2010,impact-w10-2010,sans-serif"},{"displayName":"Lucida Console","fontFamily":"lucida console","cdnName":"","genericFamily":"monospace","provider":"system","characterSets":["latin","latin-ext"],"permissions":"all","fallbacks":"lucida-console-w01","spriteIndex":94,"cssFontFamily":"lucida console,lucida-console-w01,monospace"},{"displayName":"Lucida Sans Unicode","fontFamily":"lucida sans unicode","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin"],"permissions":"all","fallbacks":"lucida grande","spriteIndex":96,"cssFontFamily":"lucida sans unicode,lucida grande,sans-serif"},{"displayName":"Palatino Linotype","fontFamily":"palatino linotype","cdnName":"","genericFamily":"serif","provider":"system","characterSets":["latin","latin-ext"],"permissions":"all","fallbacks":"","spriteIndex":119,"cssFontFamily":"palatino linotype,serif"},{"displayName":"Tahoma","fontFamily":"tahoma","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext"],"permissions":"all","fallbacks":"tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular","spriteIndex":141,"cssFontFamily":"tahoma,tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular,sans-serif"},{"displayName":"Times New Roman","fontFamily":"times new roman","cdnName":"","genericFamily":"serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"times","spriteIndex":143,"cssFontFamily":"times new roman,times,serif"},{"displayName":"Verdana","fontFamily":"verdana","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"geneva","spriteIndex":146,"cssFontFamily":"verdana,geneva,sans-serif"}]}]
+		return window.Wix && Wix.Styles && Wix.Styles.getEditorFonts() || [{lang:'', fonts:[{"displayName":"Arial","fontFamily":"arial","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"helvetica","spriteIndex":5,"cssFontFamily":"'arial','helvetica','sans-serif'"},{"displayName":"Arial Black","fontFamily":"arial black","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","cyrillic"],"permissions":"all","fallbacks":"gadget","spriteIndex":8,"cssFontFamily":"'arial black','gadget','sans-serif'"},{"displayName":"Comic Sans MS","fontFamily":"comic sans ms","cdnName":"","genericFamily":"cursive","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"comic-sans-w01-regular,comic-sans-w02-regular,comic-sans-w10-regular","spriteIndex":22,"cssFontFamily":"'comic sans ms','comic-sans-w01-regular','comic-sans-w02-regular','comic-sans-w10-regular','cursive'"},{"displayName":"Courier New","fontFamily":"courier new","cdnName":"","genericFamily":"monospace","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"courier-ps-w01,courier-ps-w02,courier-ps-w10","spriteIndex":30,"cssFontFamily":"'courier new','courier-ps-w01','courier-ps-w02','courier-ps-w10','monospace'"},{"displayName":"Georgia","fontFamily":"georgia","cdnName":"","genericFamily":"serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"palatino,book antiqua,palatino linotype","spriteIndex":48,"cssFontFamily":"'georgia','palatino','book antiqua','palatino linotype','serif'"},{"displayName":"Impact","fontFamily":"impact","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"impact-w01-2010,impact-w02-2010,impact-w10-2010","spriteIndex":79,"cssFontFamily":"'impact','impact-w01-2010','impact-w02-2010','impact-w10-2010','sans-serif'"},{"displayName":"Lucida Console","fontFamily":"lucida console","cdnName":"","genericFamily":"monospace","provider":"system","characterSets":["latin","latin-ext"],"permissions":"all","fallbacks":"lucida-console-w01","spriteIndex":94,"cssFontFamily":"'lucida console','lucida-console-w01','monospace'"},{"displayName":"Lucida Sans Unicode","fontFamily":"lucida sans unicode","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin"],"permissions":"all","fallbacks":"lucida grande","spriteIndex":96,"cssFontFamily":"'lucida sans unicode','lucida grande','sans-serif'"},{"displayName":"Palatino Linotype","fontFamily":"palatino linotype","cdnName":"","genericFamily":"serif","provider":"system","characterSets":["latin","latin-ext"],"permissions":"all","fallbacks":"","spriteIndex":119,"cssFontFamily":"'palatino linotype','serif'"},{"displayName":"Tahoma","fontFamily":"tahoma","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext"],"permissions":"all","fallbacks":"tahoma-w01-regular,tahoma-w02-regular,tahoma-w10-regular,tahoma-w15--regular,tahoma-w99-regular","spriteIndex":141,"cssFontFamily":"'tahoma','tahoma-w01-regular','tahoma-w02-regular','tahoma-w10-regular','tahoma-w15--regular','tahoma-w99-regular','sans-serif'"},{"displayName":"Times New Roman","fontFamily":"times new roman","cdnName":"","genericFamily":"serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"times","spriteIndex":143,"cssFontFamily":"'times new roman','times','serif'"},{"displayName":"Verdana","fontFamily":"verdana","cdnName":"","genericFamily":"sans-serif","provider":"system","characterSets":["latin","latin-ext","cyrillic"],"permissions":"all","fallbacks":"geneva","spriteIndex":146,"cssFontFamily":"'verdana','geneva','sans-serif'"}]}]
 	}
+
+    function addCommasIfNeededToFontFamilies(cssFontFamily){
+        var fontFamilyArr = cssFontFamily.split(',');
+
+        for (var fontFamily in fontFamilyArr) {
+            if (fontFamilyArr[fontFamily].indexOf('"') < 0) {
+                fontFamilyArr[fontFamily]  = '"' + fontFamilyArr[fontFamily]  + '"';
+            }
+        }
+
+        return fontFamilyArr.toString();
+    }
 
 	function appendSpriteMap(spriteUrl, $el) {
 		if (!spriteUrl) {
@@ -2969,6 +2980,13 @@ jQuery.fn.definePlugin('FontPicker', function () {
 				var font = fontsMeta[f];
 				var offsetIndex = font.characterSets.indexOf(fontsMetaLang.lang);
 				var spriteIndex = font.spriteIndex + offsetIndex;
+
+                // Add commas for each font family if needed
+                font.cssFontFamily = addCommasIfNeededToFontFamilies(font.cssFontFamily);
+
+                // Convert " to '
+                font.cssFontFamily = font.cssFontFamily.replace(/\"/g, '\'');
+
 				var el = $('<div data-value-extended="'+font.cssFontFamily+'" value="' + font.fontFamily + '">' + font.displayName + '</div>').css({
 					backgroundImage: 'url("'+spriteUrl+'")',
 					backgroundRepeat: 'no-repeat',
@@ -3025,7 +3043,7 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 		presetSelectClass:'font-style-picker-preset-select',
 		fontPickerClass: 'font-style-picker-font-picker',
 		fontSizeClass: 'font-style-picker-font-size',
-		textStyleClass: 'font-style-picker-text-style'
+		textStyleClass: 'font-style-picker-text-style' 
 	};
 
     var defaultFontDisplayName = 'Arial';
@@ -3066,7 +3084,7 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 		markup : function () {
 			this.$el.html(boxLikeDrop);
 			this.$el.addClass(names.fontStylePickerClass);
-
+			
 			this.createPopup();
 			this.createFontPicker();
 			this.createTextStylePicker();
@@ -3074,21 +3092,21 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
             this.createPresetPicker();
 
 			this.popup.content.innerHTML = contentMarkup;
-
+			
 			$(this.popup.content).find('.style-place-holder').append(
 				this.presetSelectPicker.$el.addClass(names.presetSelectClass)
 			);
-
+			
 			$(this.popup.content).find('.font-place-holder').append(
 				this.fontPicker.$el.addClass(names.fontPickerClass)
 			);
-
+			
 			$(this.popup.content).find('.props-place-holder').append(
 				this.fontSizePicker.$el.addClass(names.fontSizeClass),
 				this.textStylePicker.$el.addClass(names.textStyleClass)
 			);
-
-			//this.popup.open();
+			
+			//this.popup.open();			
 		},
 		createFontSizePicker: function(){
 			this.fontSizePicker = this.UI().create({
@@ -3145,8 +3163,8 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 						return $el;
 					}
 				}
-			}).getCtrl();
-
+			}).getCtrl();		
+			
 		},
         createCustomMarkup: function(){
             var fontFamily = (this.fontPicker && this.fontPicker.getValue() && this.fontPicker.getValue().value) || defaultFont;
@@ -3208,9 +3226,9 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 					onposition: function(){}
 				}
 			}).getCtrl();
-
+			
 			this.popup.setRelativeElement(that.$el.find('.box-like-drop')[0]);
-
+		
 		},
 		hideArrow:function(){
 			$(this.popup.arrow).hide(50);
@@ -3228,7 +3246,7 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 			this.registerToChangeEventAndDelegate(this.textStylePicker, this);
 			this.registerToChangeEventAndDelegate(this.fontPicker, this);
 			this.registerToChangeEventAndDelegate(this.presetSelectPicker, this);
-
+			
 			this.$el.on('uilib-dropdown-close', function(evt, plugin){
 				if(plugin.isOpen && $(that.popup.arrow).hasClass('popup-arrow-top')){
                     setTimeout(function(){
@@ -3241,7 +3259,7 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 					that.hideArrow();
 				}
 			});
-
+			
 			this.whenDestroy(function(){
 				this.fontSizePicker.destroy();
 				this.textStylePicker.destroy();
@@ -3352,7 +3370,7 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 				this.handlePluginPresetSelectChange(plugin, evt);
 			} else {
 				this.handleNonPluginPresetSelectChange(plugin, evt);
-			}
+			}			
 			this.triggerChangeEvent(this.getValue());
 		},
 		registerToChangeEventAndDelegate: function(plugin, ctx){
@@ -3434,121 +3452,124 @@ jQuery.fn.definePlugin('FontStylePicker', function () {
 
 
 jQuery.fn.definePlugin('Input', function ($) {
-	'use strict';
+    'use strict';
 
-	var classNames = {
-		inputClass: 'uilib-input',
-		validInputClass: 'valid-input',
-		invalidInputClass: 'invalid-input',
-		disabledClass:'disabled',
-		largeClass: 'large',
-		mediumClass: 'medium',
-		xLargeClass: 'x-large',
-		bigClass: 'big'
+    var classNames = {
+        inputClass: 'uilib-input',
+        validInputClass: 'valid-input',
+        invalidInputClass: 'invalid-input',
+        disabledClass:'disabled',
+        largeClass: 'large',
+        mediumClass: 'medium',
+        xLargeClass: 'x-large',
+        bigClass: 'big'
 
-	};
+    };
 
-	return {
-		init: function(){
-			this.markup();
-			this.setValue(this.options.value);
-			this.bindEvents();
-		},
-		setValidationFunction:function(validationFunction){
-			if(typeof validationFunction === 'function'){
-				this.options.validate = true;
-				this.options.validation = validationFunction;
-			} else {
-				throw new Error('You must provide a valid validation function.');
-			}
-		},
-		getDefaults: function(){
-			return {
-				value:'',
-				validate: false,
-				required: false,
-				type: 'text',
-				placeholder: 'Text input',
-				disabled : false,
-				size: 'default',
-				validation: function(){
-					return true;
-				}
-			};
-		},
-		markup: function () {
-			this.$input = $('<input>').attr('type', this.options.type).attr('placeholder', this.options.placeholder).addClass(classNames.inputClass);
-			if (this.options.disabled){
-				this.disable();
-			}
-			switch (this.options.size) {
-				case 'large':
-					this.$input.addClass(classNames.largeClass);
-					break;
-				case 'medium':
-					this.$input.addClass(classNames.mediumClass);
-					break;
-				case 'x-large':
-					this.$input.addClass(classNames.xLargeClass);
-					break;
-				case 'big':
-					this.$input.addClass(classNames.bigClass);
-					break;
-			}
+    return {
+        init: function(){
+            this.markup();
+            this.setValue(this.options.value);
+            this.bindEvents();
+        },
+        setValidationFunction:function(validationFunction){
+            if(typeof validationFunction === 'function'){
+                this.options.validate = true;
+                this.options.validation = validationFunction;
+            } else {
+                throw new Error('You must provide a valid validation function.');
+            }
+        },
+        getDefaults: function(){
+            return {
+                value:'',
+                validate: false,
+                required: false,
+                type: 'text',
+                placeholder: 'Text input',
+                disabled : false,
+                size: 'default',
+                validation: function(){
+                    return true;
+                }
+            };
+        },
+        markup: function () {
+            this.$input = $('<input>').attr('type', this.options.type).attr('placeholder', this.options.placeholder).addClass(classNames.inputClass);
+            if (this.options.disabled){
+                this.disable();
+            }
+            switch (this.options.size) {
+                case 'large':
+                    this.$input.addClass(classNames.largeClass);
+                    break;
+                case 'medium':
+                    this.$input.addClass(classNames.mediumClass);
+                    break;
+                case 'x-large':
+                    this.$input.addClass(classNames.xLargeClass);
+                    break;
+                case 'big':
+                    this.$input.addClass(classNames.bigClass);
+                    break;
+            }
 
-			this.$el.append(this.$input);
-		},
-		bindEvents: function () {
-			var input = this;
-			input.$input.on('blur', function(){
-				input.setValue(input.$input.val());
-				input.triggerChangeEvent(input.getValue());
-			});
-			input.$input.on('keyup',function(){
-				input.setValue(input.$input.val());
-			});
-		},
-		getValue: function () {
-			return this.value;
-		},
-		setValue: function (value) {
-			var isPassRequiredValidation = this.options.required ? !!value.length : true;
-			var isDifferentValue = (this.$input.val() !== this.value || value !== this.value);
-			if(isPassRequiredValidation && this.options.validation(value) && isDifferentValue){
-				if(!isNaN(parseFloat(value)) && isFinite(value)){
-					value = Math.round(value);
-				}
-				this.lastValue = this.getValue();
+            this.$el.append(this.$input);
+        },
+        bindEvents: function () {
+            var input = this;
+            input.$input.on('blur', function(){
+                input.setValue(input.$input.val());
+                input.triggerChangeEvent(input.getValue());
+            });
+            input.$input.on('keyup',function(){
+                input.setValue(input.$input.val());
+            });
+        },
+        getValue: function () {
+            return this.value;
+        },
+        setValue: function (value) {
+            var isPassRequiredValidation = this.options.required ? !!value.length : true;
+            var isDifferentValue = (this.$input.val() !== this.value || value !== this.value);
+            if(isPassRequiredValidation && this.options.validation(value) && isDifferentValue && this.$input[0].checkValidity()){
+                if(this.options.type == 'number' && !isNaN(parseFloat(value)) && isFinite(value)){
+                    value = Math.round(value);
+                }
+                this.lastValue = this.getValue();
                 if (value !== this.$input.val()) {
                     this.$input.val(value);
                 }
-				this.value = value;
-				if(this.options.validate){
-					this.$input.removeClass(classNames.invalidInputClass).addClass(classNames.validInputClass);
-				}
-			} else if(this.$input.val() !== this.value){
-				this.value = '';
-				if(this.options.validate){
-					this.$input.removeClass(classNames.validInputClass).addClass(classNames.invalidInputClass);
-				}
-			} else {
-				if (this.$input.val() === ''){
-					this.$input.removeClass(classNames.invalidInputClass);
-				}
-			}
-		},
-		disable: function () {
-			this.$input.addClass(classNames.disabledClass);
-			this.$input.attr('disabled', 'disabled');
-		},
-		enable: function () {
-			this.$input.removeClass(classNames.disabledClass);
-			this.$input.removeAttr('disabled', 'disabled');
-		},
-		isDisabled: function () {
-			return this.$input.hasClass(classNames.disabledClass);
-		}
-	};
+                this.value = value;
+                if(this.options.validate || this.options.validation(value)){
+                    this.$input.removeClass(classNames.invalidInputClass).addClass(classNames.validInputClass);
+                }
+            } else if(this.$input.val() !== this.value || this.options.type == 'number'){
+                this.value = '';
+                if((this.options.validate && (this.$input.val() !== '')) || !this.$input[0].checkValidity()){
+                    this.$input.removeClass(classNames.validInputClass).addClass(classNames.invalidInputClass);
+                }
+                else {
+                    this.$input.removeClass(classNames.invalidInputClass);
+                }
+            }
+            else if (this.$input.val() === '' && this.$input[0].checkValidity()){
+                this.$input.removeClass(classNames.invalidInputClass);
+            }
+
+        },
+        disable: function () {
+            this.$input.addClass(classNames.disabledClass);
+            this.$input.attr('disabled', 'disabled');
+        },
+        enable: function () {
+            this.$input.removeClass(classNames.disabledClass);
+            this.$input.removeAttr('disabled', 'disabled');
+        },
+        isDisabled: function () {
+            return this.$input.hasClass(classNames.disabledClass);
+        }
+    };
 
 });
 
@@ -3558,21 +3579,21 @@ jQuery.fn.definePlugin('LanguagePicker', function () {
     var styles = {
         className : 'uilib-languagePicker'
     };
-
+	
 	var symbToName = {
 		'En': 'English',
 		'De': 'Deutsch',
 		'Es': 'Español',
 		'Fr': 'Français',
-		'It': 'Italiano',
-		'Po': 'Polski',
-		'Pt': 'Português',
-		'Ru': 'Русский',
-		'Ja': '日本語',
-		'Ko': '한국어',
+		'It': 'Italiano', 
+		'Po': 'Polski', 
+		'Pt': 'Português', 
+		'Ru': 'Русский', 
+		'Ja': '日本語', 
+		'Ko': '한국어', 
 		'Tr': 'Türkçe'
 	};
-
+	
 	return {
 		init : function () {
 			this.markup();
@@ -3622,8 +3643,8 @@ jQuery.fn.definePlugin('LanguagePicker', function () {
 		}
 	};
 
-
-    function _optionsHtml(langs) {
+	
+    function _optionsHtml(langs) {	
 		return $(langs.map(function(symb){
 			return '<div value="'+symb+'">'+symbToName[symb]+'</div>';
 		}).join(''));
@@ -3631,225 +3652,226 @@ jQuery.fn.definePlugin('LanguagePicker', function () {
 });
 
 jQuery.fn.definePlugin('Popup', function ($) {
-	'use strict';
+    'use strict';
 
-	var names = {};
+    var names = {};
 
-	var buttonSet = {
-		okCancel: '<button class="uilib-btn btn-secondary btn-small x-close-popup">Cancel</button><button style="float:right" class="uilib-btn btn-small close-popup">OK</button>',
-		none: ''
-	};
+    var buttonSet = {
+        okCancel: '<button class="uilib-btn btn-secondary btn-small x-close-popup">Cancel</button><button style="float:right" class="uilib-btn btn-small close-popup">OK</button>',
+        none: ''
+    };
 
-	return {
-		init: function(){
-			// TODO: get rid of this.popup
-			this.state = 'open';
-			this.popup = this.$el[0];
-			this.transclude();
-			this.markup();
-			this.close();
-			this.setContent(this.options.content);
-			this.setFooter(this.options.footer);
-			this.setTitle(this.options.title);
-			this.setPosition();
-			this.bindEvents();
-		},
-		getDefaults: function(){
-			return {
-				appendTo: 'body',
-				title : 'Popup',
-				content : '',
-				footer : '',
-				modal : false,
-				modalBackground : 'rgba(0,0,0,0.5)',
-				height : 'auto',
-				width : 300,
-				buttonSet: '',
-				fixed: false,
-				onclose : function () {},
-				oncancel: function() {},
-				onopen: function(){},
-				onposition: function(){}
-			};
-		},
-		markup: function () {
-			this.modal = document.createElement('div');
-			this.header = document.createElement('header');
-			this.headerTitle = document.createElement('span');
-			this.closeBtn = document.createElement('div');
+    return {
+        init: function(){
+            // TODO: get rid of this.popup
+            this.state = 'open';
+            this.popup = this.$el[0];
+            this.transclude();
+            this.markup();
+            this.close();
+            this.setContent(this.options.content);
+            this.setFooter(this.options.footer);
+            this.setTitle(this.options.title);
+            this.setPosition();
+            this.bindEvents();
+        },
+        getDefaults: function(){
+            return {
+                appendTo: 'body',
+                title : 'Popup',
+                content : '',
+                footer : '',
+                modal : false,
+                modalBackground : 'rgba(0,0,0,0.5)',
+                height : 'auto',
+                width : 300,
+                buttonSet: '',
+                fixed: false,
+                maxPopupWidth: 0,
+                onclose : function () {},
+                oncancel: function() {},
+                onopen: function(){},
+                onposition: function(){}
+            };
+        },
+        markup: function () {
+            this.modal = document.createElement('div');
+            this.header = document.createElement('header');
+            this.headerTitle = document.createElement('span');
+            this.closeBtn = document.createElement('div');
 
-			this.content = document.createElement('div');
+            this.content = document.createElement('div');
 
-			this.footer = document.createElement('div');
+            this.footer = document.createElement('div');
 
-			this.modal.className = 'popup-modal';
+            this.modal.className = 'popup-modal';
 
-			this.closeBtn.className = 'popup-close-btn x-close-popup';
-			this.popup.className = 'uilib-popup';
-			this.header.className = 'popup-header';
-			this.content.className = 'popup-content';
-			this.footer.className = 'popup-footer';
+            this.closeBtn.className = 'popup-close-btn x-close-popup';
+            this.popup.className = 'uilib-popup';
+            this.header.className = 'popup-header';
+            this.content.className = 'popup-content';
+            this.footer.className = 'popup-footer';
 
-			this.popup.appendChild(this.header);
-			this.popup.appendChild(this.content);
-			this.popup.appendChild(this.footer);
-			this.header.appendChild(this.headerTitle);
-			this.header.appendChild(this.closeBtn);
+            this.popup.appendChild(this.header);
+            this.popup.appendChild(this.content);
+            this.popup.appendChild(this.footer);
+            this.header.appendChild(this.headerTitle);
+            this.header.appendChild(this.closeBtn);
 
-			this.arrow = this.createArrowElement();
-		},
-		transclude: function () {
-			var $el = this.$el;
-			$el.remove();
-			var headerContent = $el.find('.popup-header').text();
-			var contentContent = $el.find('.popup-content').html();
-			var footerContent = $el.find('.popup-footer').html();
-			if($.trim(headerContent)){
-				this.options.title = headerContent;
-			}
-			if($.trim(contentContent)){
-				this.options.content = contentContent;
-			}
-			if($.trim(footerContent)){
-				this.options.footer = footerContent;
-			}
-			$el.empty();
-		},
-		bindEvents: function () {
-			var popup = this;
-			var closeHandler = function (type) {
-				popup.setValue('close');
-				var onType = popup.options['on' + type];
-				if(typeof onType === 'string' && typeof window[onType] === 'function'){
-					window[onType].call(popup, {type: type});
-				} else if(typeof onType === 'function'){
-					onType.call(popup, {type: type});
-				}
-			}
-			var globalCloseHandler = function(evt){
+            this.arrow = this.createArrowElement();
+        },
+        transclude: function () {
+            var $el = this.$el;
+            $el.remove();
+            var headerContent = $el.find('.popup-header').text();
+            var contentContent = $el.find('.popup-content').html();
+            var footerContent = $el.find('.popup-footer').html();
+            if($.trim(headerContent)){
+                this.options.title = headerContent;
+            }
+            if($.trim(contentContent)){
+                this.options.content = contentContent;
+            }
+            if($.trim(footerContent)){
+                this.options.footer = footerContent;
+            }
+            $el.empty();
+        },
+        bindEvents: function () {
+            var popup = this;
+            var closeHandler = function (type) {
+                popup.setValue('close');
+                var onType = popup.options['on' + type];
+                if(typeof onType === 'string' && typeof window[onType] === 'function'){
+                    window[onType].call(popup, {type: type});
+                } else if(typeof onType === 'function'){
+                    onType.call(popup, {type: type});
+                }
+            }
+            var globalCloseHandler = function(evt){
                 var popupEl = $(evt.target).parents('.' + popup.popup.className)[0];
-				if(popupEl && popupEl === popup.popup || !popup.isOpen()){
-					return ;
-				}else if(!popup.options.modal){
-					popup.setValue('close');
-					closeHandler('cancel');
-				}
-			}
+                if(popupEl && popupEl === popup.popup || !popup.isOpen()){
+                    return ;
+                }else if(!popup.options.modal){
+                    popup.setValue('close');
+                    closeHandler('cancel');
+                }
+            }
 
-			function keyHandler(evt){
-				if(evt.which === 27){
-					if(popup.isOpen() && !popup.options.modal){
-						closeHandler('cancel');
-					}
-				}
-			}
+            function keyHandler(evt){
+                if(evt.which === 27){
+                    if(popup.isOpen() && !popup.options.modal){
+                        closeHandler('cancel');
+                    }
+                }
+            }
 
-			$(window).on('keyup', keyHandler);
+            $(window).on('keyup', keyHandler);
 
-			$(this.popup).on('click', '.close-popup', closeHandler.bind(null, 'close'));
-			$(this.popup).on('click', '.x-close-popup', closeHandler.bind(null, 'cancel'));
-			$(window).on('click', globalCloseHandler);
+            $(this.popup).on('click', '.close-popup', closeHandler.bind(null, 'close'));
+            $(this.popup).on('click', '.x-close-popup', closeHandler.bind(null, 'cancel'));
+            $(window).on('click', globalCloseHandler);
 
-			this.whenDestroy(function(){
-				$(window).off('click', globalCloseHandler);
-				$(window).off('keyup', keyHandler);
-			});
+            this.whenDestroy(function(){
+                $(window).off('click', globalCloseHandler);
+                $(window).off('keyup', keyHandler);
+            });
 
-		},
-		getValue: function () {
-			return this.isOpen();
-		},
-		setValue: function (value) {
-			if(value === 'open'){
-				this.open();
-			} else {
-				this.close();
-			}
-			this.triggerChangeEvent('close');
-		},
-		setRelativeElement: function(selectorOrElement){
-			this.relativeElement = $(selectorOrElement)[0];
-		},
-		setPosition: function () {
-			this.$el.css({
-				position : this.options.fixed ? 'fixed':'absolute',
-				width : this.options.width,
-				height : this.options.height,
-				left : '50%',
-				top : '50%',
-				marginLeft : 0 - this.options.width / 2,
-				marginTop : 0 - this.$el.height() / 2
-			});
+        },
+        getValue: function () {
+            return this.isOpen();
+        },
+        setValue: function (value) {
+            if(value === 'open'){
+                this.open();
+            } else {
+                this.close();
+            }
+            this.triggerChangeEvent('close');
+        },
+        setRelativeElement: function(selectorOrElement){
+            this.relativeElement = $(selectorOrElement)[0];
+        },
+        setPosition: function () {
+            this.$el.css({
+                position : this.options.fixed ? 'fixed':'absolute',
+                width : this.options.width,
+                height : this.options.height,
+                left : '50%',
+                top : '50%',
+                marginLeft : 0 - this.options.width / 2,
+                marginTop : 0 - this.$el.height() / 2
+            });
             if(this.relativeElement){
                 this.setBestPosition(this.relativeElement);
             }
-			if(typeof this.options.onposition === 'function'){
-				return this.options.onposition.call(this);
-			}
-		},
-		setBestPosition: function(relativeTo){
-			if(relativeTo instanceof jQuery){
-				relativeTo = relativeTo[0];
-			}
+            if(typeof this.options.onposition === 'function'){
+                return this.options.onposition.call(this);
+            }
+        },
+        setBestPosition: function(relativeTo){
+            if(relativeTo instanceof jQuery){
+                relativeTo = relativeTo[0];
+            }
             var dir;
             if (this.options.fixed){
-                dir = setFixedPosition(this.$el[0], relativeTo);
+                dir = setFixedPosition(this.$el[0], relativeTo, this.options.maxPopupWidth);
             }else{
                 dir = setAbsolutePosition(this.$el[0], relativeTo);
             }
-			this.setArrowDir(dir);
-			return dir;
-		},
-		createArrowElement: function(){
-			return createArrowElement();
-		},
-		setArrowDir: function(side){
-			side = side||'left';
-			return this.arrow.className = 'popup-arrow popup-arrow-' + side;
-		},
-		setContent: function (content) {
-			$(this.content).empty().append(content);
-		},
-		setFooter: function (footerContent) {
-			$(this.footer).empty().append(buttonSet[this.options.buttonSet], footerContent);
-		},
-		setTitle: function (title) {
-			$(this.headerTitle).text(title);
-		},
-		isOpen: function (title) {
-			return this.state === 'open';
-		},
-		toggle: function(){
-			this.isOpen() ? this.close() : this.open();
-		},
-		open: function () {
-			if(this.isOpen()){return;}
+            this.setArrowDir(dir);
+            return dir;
+        },
+        createArrowElement: function(){
+            return createArrowElement();
+        },
+        setArrowDir: function(side){
+            side = side||'left';
+            return this.arrow.className = 'popup-arrow popup-arrow-' + side;
+        },
+        setContent: function (content) {
+            $(this.content).empty().append(content);
+        },
+        setFooter: function (footerContent) {
+            $(this.footer).empty().append(buttonSet[this.options.buttonSet], footerContent);
+        },
+        setTitle: function (title) {
+            $(this.headerTitle).text(title);
+        },
+        isOpen: function (title) {
+            return this.state === 'open';
+        },
+        toggle: function(){
+            this.isOpen() ? this.close() : this.open();
+        },
+        open: function () {
+            if(this.isOpen()){return;}
             this.closeAllPopups();
-			this.state = 'open';
-			setTimeout(function(){
-				if(this.options.modal){
-					document.body.appendChild(this.modal);
-				}
-				$(this.options.appendTo).append(this.popup);
-				this.popup.style.display = 'block';
-				this.modal.style.display = 'block';
-				this.arrow.style.display = 'block';
-				this.modal.style.backgroundColor = this.options.modalBackground;
-				this.setPosition();
-				if(this.options.onopen){
-					return this.options.onopen.call(this);
-				}
-			}.bind(this),0);
-		},
-		close: function () {
-			if(!this.isOpen()){return;}
-			this.state = 'close';
-			setTimeout(function(){
-				this.modal.style.display = 'none';
-				this.popup.style.display = 'none';
-				this.arrow.style.display = 'none';
-			}.bind(this),0);
-		},
+            this.state = 'open';
+            setTimeout(function(){
+                if(this.options.modal){
+                    document.body.appendChild(this.modal);
+                }
+                $(this.options.appendTo).append(this.popup);
+                this.popup.style.display = 'block';
+                this.modal.style.display = 'block';
+                this.arrow.style.display = 'block';
+                this.modal.style.backgroundColor = this.options.modalBackground;
+                this.setPosition();
+                if(this.options.onopen){
+                    return this.options.onopen.call(this);
+                }
+            }.bind(this),0);
+        },
+        close: function () {
+            if(!this.isOpen()){return;}
+            this.state = 'close';
+            setTimeout(function(){
+                this.modal.style.display = 'none';
+                this.popup.style.display = 'none';
+                this.arrow.style.display = 'none';
+            }.bind(this),0);
+        },
         closeAllPopups: function(){
             var $popups = $("." + this.popup.className);
             $popups.each(function(index, popup){
@@ -3859,20 +3881,20 @@ jQuery.fn.definePlugin('Popup', function ($) {
                 }
             });
         }
-	};
+    };
 
-	function createArrowElement(side){
-		side = side || 'left';
-		var wrapperArrow = document.createElement('div');
-		var a1 = document.createElement('div');
-		var a2 = document.createElement('div');
-		wrapperArrow.className = 'popup-arrow popup-arrow-' + side;
-		a1.className = 'popup-arrow-one';
-		a2.className = 'popup-arrow-two';
-		wrapperArrow.appendChild(a1);
-		wrapperArrow.appendChild(a2);
-		return wrapperArrow;
-	}
+    function createArrowElement(side){
+        side = side || 'left';
+        var wrapperArrow = document.createElement('div');
+        var a1 = document.createElement('div');
+        var a2 = document.createElement('div');
+        wrapperArrow.className = 'popup-arrow popup-arrow-' + side;
+        a1.className = 'popup-arrow-one';
+        a2.className = 'popup-arrow-two';
+        wrapperArrow.appendChild(a1);
+        wrapperArrow.appendChild(a2);
+        return wrapperArrow;
+    }
 
     function setAbsolutePosition(targetNode, relativeTo){
         var side = 'left';
@@ -3928,10 +3950,10 @@ jQuery.fn.definePlugin('Popup', function ($) {
 
     }
 
-    function setFixedPosition(popup, relativeTo){
-		var side = 'left';
-		var right = 'auto';
-		var arrowWidth = 15;
+    function setFixedPosition(popup, relativeTo, maxPopupWidth){
+        var side = 'left';
+        var right = 'auto';
+        var arrowWidth = 15;
         var containerWidth = window.innerWidth;
 
         popup.style.top = '0px';
@@ -3940,47 +3962,47 @@ jQuery.fn.definePlugin('Popup', function ($) {
         popup.style.right = 'auto';
         popup.style.margin = '0';
 
-		var popupWidth = popup.clientWidth;
-		var popupHeight = popup.clientHeight;
-		var halfPopupHeight = popupHeight/2;
+        var popupWidth = maxPopupWidth > 0? maxPopupWidth: popup.clientWidth;
+        var popupHeight = popup.clientHeight;
+        var halfPopupHeight = popupHeight/2;
 
-		var relativeToWidth = relativeTo.clientWidth;
-		var relativeToHeight = relativeTo.clientHeight;
+        var relativeToWidth = relativeTo.clientWidth;
+        var relativeToHeight = relativeTo.clientHeight;
 
-		var relativeToOffset = getFixedOffset(relativeTo);
+        var relativeToOffset = getFixedOffset(relativeTo);
 
         // popup will be opened on the right side - default
         var top = relativeToOffset.top + relativeToHeight/2 - halfPopupHeight;
         var left = relativeToOffset.left + relativeToWidth + arrowWidth;
 
         // popup will be opened on the left side
-		if((relativeToOffset.left + relativeToWidth + arrowWidth + popupWidth + 1) > containerWidth){
+        if((relativeToOffset.left + relativeToWidth + arrowWidth + popupWidth + 1) > containerWidth){
             right = containerWidth - relativeToOffset.left + arrowWidth + 1;
-			side = 'right';
-		}
+            side = 'right';
+        }
 
         // popup will be opened on top of the control
         // If there is no enough space for the height of the popup
-		var rightOver = (relativeToOffset.left - (popupWidth + arrowWidth + 1));
-		if((side === 'right' && rightOver < 0) || ((popupHeight + top) > window.innerHeight) ){
-			top = relativeToOffset.top - arrowWidth - popupHeight;
-			left = relativeToOffset.left + relativeToWidth/2 - popupWidth/2;
-			side = 'top';
-		}
+        var rightOver = (relativeToOffset.left - (popupWidth + arrowWidth + 1));
+        if((side === 'right' && rightOver < 0) || ((popupHeight + top) > window.innerHeight) ){
+            top = relativeToOffset.top - arrowWidth - popupHeight;
+            left = relativeToOffset.left + relativeToWidth/2 - popupWidth/2;
+            side = 'top';
+        }
 
         // popup will be opened on the bottom of the control
 		if(top  < 0){
-			top = relativeToOffset.top + (relativeToHeight + arrowWidth);
+			top = relativeToOffset.top + (relativeToHeight + arrowWidth) - 4;
             side = 'bottom';
-		}
+        }
 
-		popup.style.top = top + 'px';
+        popup.style.top = top + 'px';
         popup.style.left = (side === 'right') ? 'auto' : left + 'px';
         popup.style.right = (side === 'right') ? right + 'px' : 'auto';
 
-		popup.style.margin = '';
-		return side;
-	}
+        popup.style.margin = '';
+        return side;
+    }
 
     function getFixedOffset(el) {
         return { top: el.getBoundingClientRect().top,
@@ -3988,23 +4010,21 @@ jQuery.fn.definePlugin('Popup', function ($) {
 
     }
 
-	function getOffset(el) {
-		var _x = 0;
-		var _y = 0;
-		while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
-			if(el === document.body){
-				_x += el.offsetLeft - document.documentElement.scrollLeft;
-				_y += el.offsetTop - document.documentElement.scrollTop;
-			} else {
-				_x += el.offsetLeft - el.scrollLeft;
-				_y += el.offsetTop - el.scrollTop;
-			}
-			el = el.offsetParent;
-		}
-		return { top: _y, left: _x };
-	}
-
-
+    function getOffset(el) {
+        var _x = 0;
+        var _y = 0;
+        while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+            if(el === document.body){
+                _x += el.offsetLeft - document.documentElement.scrollLeft;
+                _y += el.offsetTop - document.documentElement.scrollTop;
+            } else {
+                _x += el.offsetLeft - el.scrollLeft;
+                _y += el.offsetTop - el.scrollTop;
+            }
+            el = el.offsetParent;
+        }
+        return { top: _y, left: _x };
+    }
 });
 
 jQuery.fn.definePlugin('Radio', function ($) {
@@ -4079,7 +4099,7 @@ jQuery.fn.definePlugin('Radio', function ($) {
 });
 (function ($, window, document, undefined) {
     'use strict';
-
+		
     var pluginName = 'Scrollbar',
     defaults = {
             // width in pixels of the visible scroll area
@@ -4088,7 +4108,7 @@ jQuery.fn.definePlugin('Radio', function ($) {
             height : '250px',
             // width in pixels of the scrollbar and rail
             size : '8px',
-            // corner radius
+            // corner radius 
             radius: '4px',
             // scrollbar color, accepts any hex/color value
             color: '#a4d9fc',
@@ -4178,7 +4198,7 @@ jQuery.fn.definePlugin('Radio', function ($) {
 		this.$el.trigger('slimscrolling', ~~delta);
 
 	}
-
+	
     Plugin.prototype.markup = function() {
 
         var divS = '<div></div>';
@@ -4286,12 +4306,12 @@ jQuery.fn.definePlugin('Radio', function ($) {
         }
 
         function doNothing(){return false}
-
+				
 		$(document.body).on('uilib-update-scroll-bars', function(){
 			//plugin.getBarHeight();
 			plugin.updateDisplay();
-		});
-
+		});	
+		
         this.$el.mousewheel(function(evt, delta){
 
             if ($bar.css('display') === 'none') return;
@@ -4518,14 +4538,14 @@ jQuery.fn.definePlugin('Radio', function ($) {
 }));
 jQuery.fn.definePlugin('Slider', function ($) {
 	'use strict';
-
+	
 	var names = {
 		sliderClass: 'uilib-slider',
 		pinClass: 'uilib-slider-pin',
 		disabledClass: 'disabled',
 		textClass:'uilib-text'
 	};
-
+	
 	return {
 		init: function(){
 			this.markup();
@@ -4553,26 +4573,26 @@ jQuery.fn.definePlugin('Slider', function ($) {
 			var style = {
 				width : this.options.width
 			};
-
+			
 			if(!this.$el.hasClass(names.sliderClass)){
 				this.$el.addClass(names.sliderClass);
 			}
-
+			
 			if(this.options.preLabel){
 				this.$el.prepend('<span class="uilib-text uilib-slider-preLabel">' + this.options.preLabel + '</span>');
 				style.left = 14;
 			}
-
+			
 			this.$pin = $('<div>');
 			this.$el.append(this.$pin);
-
+			
 			if(this.options.postLabel){
 				this.$el.append('<span class="uilib-text uilib-slider-postLabel">' + this.options.postLabel + '</span>');
 			}
-
-
+			
+			
 			this.$el.addClass(names.sliderClass).css(style).addClass(this.options.className);
-
+			
 			this.$pin.addClass(names.pinClass);
 			this.$pin.width(19);
 
@@ -4682,18 +4702,18 @@ jQuery.fn.definePlugin('Slider', function ($) {
 			return this.$el.hasClass(names.disabledClass);
 		}
 	};
-
+	
 	function _toolTipHtml() {
         return '<div class="uilib-slider-tooltip uilib-slider-tooltip-wrapper">' +
             '<div class="picker-arrow-top"><div class="picker-arrow-one"></div><div class="picker-arrow-two"></div></div>' +
             '<div class="uilib-text"></div>' +
             '</div>';
     }
-
+	
 });
 jQuery.fn.definePlugin('Spinner', function ($) {
 	'use strict';
-
+	
 	var styles = {
         className: 'uilib-spinner',
 		defaultSize: 'default',
@@ -4709,7 +4729,7 @@ jQuery.fn.definePlugin('Spinner', function ($) {
         focusOut: 'focusout',
         keypress: 'keypress'
     };
-
+	
 	return {
 		init: function(){
 			this.markup();
@@ -4723,7 +4743,7 @@ jQuery.fn.definePlugin('Spinner', function ($) {
 				value : 0,
 				step: 1,
 				precision: 0
-			};
+			}; 
 		},
 		markup: function () {
 			this.$el
@@ -4756,10 +4776,10 @@ jQuery.fn.definePlugin('Spinner', function ($) {
 					startAutoRoll();
 				},100);
 			}
-
+            
 			this.$el.on(events.mouseUp + ' ' + events.mouseLeave, function(evt){
 			   clearTimeout(autoRollTicket);
-			   dir = 0;
+			   dir = 0;               
                if(evt.type !== 'mouseleave'){
                    spinner.triggerChangeEvent(spinner.getValue());
                }
@@ -4819,8 +4839,8 @@ jQuery.fn.definePlugin('Spinner', function ($) {
 			return value;
 		}
 	};
-
-
+	
+	
     function _buttonHtml() {
         return "" +
             "<div class=" + styles.upArrow + "></div>" +
@@ -4833,7 +4853,7 @@ jQuery.fn.definePlugin('Spinner', function ($) {
         }
         return val === "" || isNaN(val) ? null : val;
     }
-
+	
 });
 
 
@@ -4928,7 +4948,7 @@ jQuery.fn.definePlugin('Tooltip', function ($) {
 		getDefaults: function(){
 			return {
 				placement : placements[0],
-				text 	  : "",
+				text 	  : "", 
 				html      : false,
 				template  : '<div class=' + styles.className + '>' +
 					'<div class=' + styles.arrowClassName + '>' +
@@ -5048,3 +5068,4 @@ jQuery.fn.definePlugin('Tooltip', function ($) {
 		}
 	};
 });
+
