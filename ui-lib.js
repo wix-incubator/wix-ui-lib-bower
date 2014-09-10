@@ -2929,7 +2929,7 @@ jQuery.fn.definePlugin('FontPicker', function () {
 			if(this.isParamMode){
 				data.fontParam = true;
 			}
-			return $.extend(data, {cssFontFamily: this.dropdown.getExtendedValue()});
+			return $.extend(data, {cssFontFamily: this.dropdown.getExtendedValue(), family: data.value});
 		},
 		getDefaults : function () {
 			return {
