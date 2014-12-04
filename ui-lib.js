@@ -3586,7 +3586,7 @@ jQuery.fn.definePlugin('LanguagePicker', function () {
 		'Es': 'Español',
 		'Fr': 'Français',
 		'It': 'Italiano', 
-		'Po': 'Polski', 
+		'Pl': 'Polski', 
 		'Pt': 'Português', 
 		'Ru': 'Русский', 
 		'Ja': '日本語', 
@@ -3631,7 +3631,7 @@ jQuery.fn.definePlugin('LanguagePicker', function () {
 		},
         getDefaults: function(){
             return {
-				languages: ['En', 'De', 'Es', 'Fr', 'It', 'Po', 'Pt', 'Ru', 'Ja', 'Ko', 'Tr'],
+				languages: ['En', 'De', 'Es', 'Fr', 'It', 'Pl', 'Pt', 'Ru', 'Ja', 'Ko', 'Tr'],
 				height: 'auto'
 			};
         },
