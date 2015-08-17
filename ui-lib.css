@@ -257,24 +257,24 @@ hr{
 
 
 
- @keyframes loading {
+@keyframes loading {
     0% {
         -moz-transform: rotate(0deg);
     }
 
     100% {
         -moz-transform: rotate(360deg);
-    };
+    }
 }
 
- @-moz-keyframes loading {
+@-moz-keyframes loading {
     0% {
         -moz-transform: rotate(0deg);
     }
 
     100% {
         -moz-transform: rotate(360deg);
-    };
+    }
 }
 
 @-webkit-keyframes loading {
@@ -284,9 +284,8 @@ hr{
 
     100% {
         -webkit-transform: rotate(360deg);
-    };
+    }
 }
-
 
 
 .uilib-scrollbar::-webkit-scrollbar {
