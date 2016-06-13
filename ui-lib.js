@@ -1800,6 +1800,7 @@ jQuery.fn.definePlugin('Accordion', function($){
         applyCSS: function () {
 			this.$el.find('.' + this.options.contentClass).css(this.options.contentCSS);
 			this.$el.find('.' + this.options.triggerClass).css(this.options.triggerCSS);
+			this.$el.find('.' + this.options.triggerClass).find('h3').attr('tabIndex', 0);
 		},
 		bindEvents: function () {
 			var that = this;
