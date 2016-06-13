@@ -511,6 +511,11 @@ header .logo {
   margin-right: 5px;
   vertical-align: middle;
 }
+
+.acc-pane > h3:focus {
+  outline: none;
+}
+
 .acc-pane > h3:hover {
   color: #0077dd;
   text-decoration: underline;
