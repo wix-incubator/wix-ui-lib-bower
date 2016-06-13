@@ -1800,23 +1800,30 @@ jQuery.fn.definePlugin('Accordion', function($){
         applyCSS: function () {
 			this.$el.find('.' + this.options.contentClass).css(this.options.contentCSS);
 			this.$el.find('.' + this.options.triggerClass).css(this.options.triggerCSS);
+			this.$el.find('.' + this.options.triggerClass).find('h3').attr('tabIndex', 0);
 		},
 		bindEvents: function () {
 			var that = this;
-			this.$el.on('click', '.' + this.options.triggerClass, function (e) {
+			var handleEvent = function (e) {
+				if (e.type == 'keyup' && e.keyCode !== 13 && e.keyCode !== 32) {
+					return;
+				}
 				if($(e.target).parents('.'+that.options.contentClass).length === 0){
 					e.preventDefault();
 					that.setValue($(this));
 					that.triggerChangeEvent(that.getValue());
 				}
-			});
+			};
+
+			this.$el.on('click', '.' + this.options.triggerClass, handleEvent);
+			this.$el.on('keyup', '.' + this.options.triggerClass, handleEvent);
 		}
 	};
 
 });
 jQuery.fn.definePlugin('ButtonGroup', function($){
 	'use strict';
-	
+
 	var names = {
 		btnGroupClass : 'btn-group',
 		valueAttrName : 'data-value',
