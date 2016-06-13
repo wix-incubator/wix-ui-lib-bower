@@ -516,10 +516,13 @@ header .logo {
   outline: none;
 }
 
+.acc-pane > h3:focus,
 .acc-pane > h3:hover {
   color: #0077dd;
   text-decoration: underline;
 }
+
+.acc-pane > h3:focus:before,
 .acc-pane > h3:hover:before {
   background-position: 0 -19px;
 }
@@ -536,9 +539,11 @@ header .logo {
   background-position: 0 3px;
 }
 
-.acc-pane.acc-active h3:hover:before {
+.acc-pane.acc-active h3:hover:before,
+.acc-pane.acc-active h3:focus:before {
   background-position: 0 -41px;
 }
+
 .acc-pane.acc-active h3:hover.acc-active:before {
   background-position: 0 -107px;
 }
